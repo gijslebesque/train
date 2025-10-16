@@ -1,5 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {
+  Container,
+  Typography,
+  Button,
+  Box,
+  Alert,
+  CircularProgress,
+  Card,
+  CardContent,
+  Grid,
+  Chip,
+  Paper,
+  Stack,
+  IconButton,
+  Divider
+} from '@mui/material';
+import {
+  Refresh as RefreshIcon,
+  Psychology as PsychologyIcon,
+  TrendingUp as TrendingUpIcon,
+  Timer as TimerIcon,
+  Speed as SpeedIcon,
+  Favorite as HeartIcon,
+  DirectionsRun as RunIcon
+} from '@mui/icons-material';
 
 const API_BASE_URL = 'http://localhost:8000';
 
@@ -68,225 +93,217 @@ const RecommendationsPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '50vh',
-        fontSize: '1.2rem',
-        color: '#666'
-      }}>
-        🤖 Generating AI recommendations...
-      </div>
+      <Container maxWidth="lg" sx={{ mt: 8, mb: 4 }}>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          minHeight="50vh"
+          gap={2}
+        >
+          <CircularProgress size={60} />
+          <Typography variant="h6" color="text.secondary">
+            🤖 Generating AI recommendations...
+          </Typography>
+        </Box>
+      </Container>
     );
   }
 
   if (error) {
     return (
-      <div style={{ 
-        maxWidth: '600px', 
-        margin: '0 auto', 
-        padding: '2rem',
-        textAlign: 'center'
-      }}>
-        <div style={{
-          backgroundColor: '#f8d7da',
-          color: '#721c24',
-          padding: '1rem',
-          borderRadius: '4px',
-          marginBottom: '1rem'
-        }}>
-          ❌ {error}
-        </div>
-        <button
-          onClick={fetchRecommendations}
-          style={{
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            padding: '0.75rem 1.5rem',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '1rem'
-          }}
-        >
-          Try Again
-        </button>
-      </div>
+      <Container maxWidth="md" sx={{ mt: 8, mb: 4 }}>
+        <Box textAlign="center">
+          <Alert severity="error" sx={{ mb: 2 }}>
+            ❌ {error}
+          </Alert>
+          <Button
+            variant="contained"
+            onClick={fetchRecommendations}
+            startIcon={<RefreshIcon />}
+            size="large"
+          >
+            Try Again
+          </Button>
+        </Box>
+      </Container>
     );
   }
 
   if (!recommendations) {
     return (
-      <div style={{ 
-        maxWidth: '600px', 
-        margin: '0 auto', 
-        padding: '2rem',
-        textAlign: 'center'
-      }}>
-        <div style={{
-          backgroundColor: '#d1ecf1',
-          color: '#0c5460',
-          padding: '1rem',
-          borderRadius: '4px'
-        }}>
-          No recommendations available. Make sure you have activities and are connected to Strava.
-        </div>
-      </div>
+      <Container maxWidth="md" sx={{ mt: 8, mb: 4 }}>
+        <Box textAlign="center">
+          <Alert severity="info">
+            No recommendations available. Make sure you have activities and are connected to Strava.
+          </Alert>
+        </Box>
+      </Container>
     );
   }
 
   return (
-    <div style={{ 
-      maxWidth: '1200px', 
-      margin: '0 auto', 
-      padding: '2rem',
-      fontFamily: 'Arial, sans-serif'
-    }}>
+    <Container maxWidth="lg" sx={{ mt: 8, mb: 4 }}>
       {/* Header */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '2rem',
-        paddingBottom: '1rem',
-        borderBottom: '2px solid #e9ecef'
-      }}>
-        <h1 style={{ color: '#333', margin: 0 }}>
-          🤖 AI Training Recommendations
-        </h1>
-        <button
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={4}
+        pb={2}
+        borderBottom="2px solid"
+        borderColor="divider"
+      >
+        <Typography variant="h4" component="h1" color="primary" fontWeight="bold">
+          <PsychologyIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+          AI Training Recommendations
+        </Typography>
+        <Button
+          variant="contained"
+          color="success"
           onClick={fetchRecommendations}
-          style={{
-            backgroundColor: '#28a745',
-            color: 'white',
-            border: 'none',
-            padding: '0.5rem 1rem',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '0.9rem'
-          }}
+          startIcon={<RefreshIcon />}
         >
-          🔄 Refresh
-        </button>
-      </div>
+          Refresh
+        </Button>
+      </Box>
 
       {/* Performance Summary */}
-      <div style={{
-        backgroundColor: '#f8f9fa',
-        padding: '1.5rem',
-        borderRadius: '8px',
-        marginBottom: '2rem',
-        border: '1px solid #e9ecef'
-      }}>
-        <h3 style={{ marginTop: 0, color: '#333' }}>📊 Performance Summary</h3>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-          gap: '1rem',
-          marginTop: '1rem'
-        }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#007bff' }}>
-              {recommendations.metrics.activity_count}
-            </div>
-            <div style={{ color: '#666', fontSize: '0.9rem' }}>Activities</div>
-          </div>
+      <Card sx={{ mb: 4 }}>
+        <CardContent>
+          <Typography variant="h5" component="h2" gutterBottom color="primary">
+            <TrendingUpIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+            Performance Summary
+          </Typography>
           
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#28a745' }}>
-              {recommendations.metrics.total_distance_km.toFixed(1)} km
-            </div>
-            <div style={{ color: '#666', fontSize: '0.9rem' }}>Total Distance</div>
-          </div>
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid item xs={6} sm={4} md={2.4}>
+              <Box textAlign="center">
+                <Typography variant="h4" color="primary" fontWeight="bold">
+                  {recommendations.metrics.activity_count}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <RunIcon sx={{ mr: 0.5, verticalAlign: 'middle', fontSize: '1rem' }} />
+                  Activities
+                </Typography>
+              </Box>
+            </Grid>
+            
+            <Grid item xs={6} sm={4} md={2.4}>
+              <Box textAlign="center">
+                <Typography variant="h4" color="success.main" fontWeight="bold">
+                  {recommendations.metrics.total_distance_km.toFixed(1)} km
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Total Distance
+                </Typography>
+              </Box>
+            </Grid>
+            
+            <Grid item xs={6} sm={4} md={2.4}>
+              <Box textAlign="center">
+                <Typography variant="h4" color="warning.main" fontWeight="bold">
+                  {formatDuration(recommendations.metrics.total_time_minutes)}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <TimerIcon sx={{ mr: 0.5, verticalAlign: 'middle', fontSize: '1rem' }} />
+                  Total Time
+                </Typography>
+              </Box>
+            </Grid>
+            
+            <Grid item xs={6} sm={4} md={2.4}>
+              <Box textAlign="center">
+                <Typography variant="h4" color="error.main" fontWeight="bold">
+                  {recommendations.metrics.avg_speed_kmh.toFixed(1)} km/h
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <SpeedIcon sx={{ mr: 0.5, verticalAlign: 'middle', fontSize: '1rem' }} />
+                  Avg Speed
+                </Typography>
+              </Box>
+            </Grid>
+            
+            {recommendations.metrics.avg_heartrate > 0 && (
+              <Grid item xs={6} sm={4} md={2.4}>
+                <Box textAlign="center">
+                  <Typography variant="h4" color="secondary" fontWeight="bold">
+                    {recommendations.metrics.avg_heartrate} bpm
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    <HeartIcon sx={{ mr: 0.5, verticalAlign: 'middle', fontSize: '1rem' }} />
+                    Avg Heart Rate
+                  </Typography>
+                </Box>
+              </Grid>
+            )}
+          </Grid>
           
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ffc107' }}>
-              {formatDuration(recommendations.metrics.total_time_minutes)}
-            </div>
-            <div style={{ color: '#666', fontSize: '0.9rem' }}>Total Time</div>
-          </div>
-          
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#dc3545' }}>
-              {recommendations.metrics.avg_speed_kmh.toFixed(1)} km/h
-            </div>
-            <div style={{ color: '#666', fontSize: '0.9rem' }}>Avg Speed</div>
-          </div>
-          
-          {recommendations.metrics.avg_heartrate > 0 && (
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#e83e8c' }}>
-                {recommendations.metrics.avg_heartrate} bpm
-              </div>
-              <div style={{ color: '#666', fontSize: '0.9rem' }}>Avg Heart Rate</div>
-            </div>
-          )}
-        </div>
-        
-        {/* Activity Types */}
-        <div style={{ marginTop: '1rem' }}>
-          <strong>Activity Types:</strong>
-          <div style={{ marginTop: '0.5rem' }}>
-            {Object.entries(recommendations.metrics.activity_types).map(([type, count]) => (
-              <span
-                key={type}
-                style={{
-                  display: 'inline-block',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  padding: '0.25rem 0.5rem',
-                  borderRadius: '12px',
-                  fontSize: '0.8rem',
-                  margin: '0.25rem 0.25rem 0.25rem 0'
-                }}
-              >
-                {type}: {count}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
+          {/* Activity Types */}
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+              Activity Types:
+            </Typography>
+            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+              {Object.entries(recommendations.metrics.activity_types).map(([type, count]) => (
+                <Chip
+                  key={type}
+                  label={`${type}: ${count}`}
+                  color="primary"
+                  size="small"
+                />
+              ))}
+            </Stack>
+          </Box>
+        </CardContent>
+      </Card>
 
       {/* AI Recommendations */}
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        overflow: 'hidden',
-        marginBottom: '2rem'
-      }}>
-        <div style={{
-          backgroundColor: '#e3f2fd',
-          padding: '1rem',
-          borderBottom: '1px solid #e9ecef'
-        }}>
-          <h3 style={{ margin: 0, color: '#1976d2' }}>
-            🤖 AI Training Recommendations
-          </h3>
-        </div>
+      <Card sx={{ mb: 4, boxShadow: 3 }}>
+        <Box
+          sx={{
+            backgroundColor: 'primary.light',
+            color: 'primary.contrastText',
+            p: 2,
+            borderBottom: '1px solid',
+            borderColor: 'divider'
+          }}
+        >
+          <Typography variant="h5" component="h3" fontWeight="bold">
+            <PsychologyIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
+            AI Training Recommendations
+          </Typography>
+        </Box>
         
-        <div style={{
-          padding: '1.5rem',
-          lineHeight: '1.6',
-          whiteSpace: 'pre-wrap'
-        }}>
-          {recommendations.suggestions}
-        </div>
-      </div>
+        <CardContent sx={{ p: 3 }}>
+          <Typography
+            variant="body1"
+            sx={{
+              lineHeight: 1.6,
+              whiteSpace: 'pre-wrap',
+              fontSize: '1.1rem'
+            }}
+          >
+            {recommendations.suggestions}
+          </Typography>
+        </CardContent>
+      </Card>
 
       {/* Token Usage Info */}
-      <div style={{
-        backgroundColor: '#f8f9fa',
-        padding: '1rem',
-        borderRadius: '8px',
-        fontSize: '0.9rem',
-        color: '#666',
-        textAlign: 'center'
-      }}>
-        <strong>AI Usage:</strong> {recommendations.token_usage.input_tokens} input + {recommendations.token_usage.output_tokens} output = {recommendations.token_usage.total_tokens} total tokens
-      </div>
-    </div>
+      <Paper
+        elevation={1}
+        sx={{
+          p: 2,
+          textAlign: 'center',
+          backgroundColor: 'grey.50'
+        }}
+      >
+        <Typography variant="body2" color="text.secondary">
+          <strong>AI Usage:</strong> {recommendations.token_usage.input_tokens} input + {recommendations.token_usage.output_tokens} output = {recommendations.token_usage.total_tokens} total tokens
+        </Typography>
+      </Paper>
+    </Container>
   );
 };
 

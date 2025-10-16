@@ -41,6 +41,24 @@ sleep 10
 # Check if services are running
 if docker-compose ps | grep -q "Up"; then
     echo "✅ Services are running!"
+    
+    # Check if Ollama is running and pull model if needed
+    if docker-compose ps | grep -q "sporty_ollama"; then
+        echo "🦙 Ollama detected, checking for models..."
+        
+        # Wait a bit for Ollama to be ready
+        sleep 10
+        
+        # Check if llama2 model exists
+        if ! docker exec sporty_ollama ollama list | grep -q "llama2"; then
+            echo "📥 Pulling llama2 model (this may take a few minutes)..."
+            docker exec sporty_ollama ollama pull llama2
+            echo "✅ llama2 model downloaded!"
+        else
+            echo "✅ llama2 model already available!"
+        fi
+    fi
+    
     echo ""
     echo "🌐 Backend API: http://localhost:8000"
     echo "📚 API Docs: http://localhost:8000/docs"

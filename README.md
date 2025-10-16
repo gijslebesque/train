@@ -122,10 +122,16 @@ STRAVA_CLIENT_SECRET=your_strava_client_secret_here
 4. Set `AI_PROVIDER=openai` in `.env`
 
 **Option B: Ollama (Free Alternative)**
-1. Install Ollama: https://ollama.ai/
-2. Pull a model: `ollama pull llama2`
-3. Start Ollama server: `ollama serve`
-4. Set `AI_PROVIDER=ollama` in `.env`
+1. Start Ollama with Docker: `docker-compose --profile ollama up -d`
+2. Run setup script: `./setup-ollama.sh` (automatically installs models)
+3. Set `AI_PROVIDER=ollama` in `.env`
+4. Restart backend: `docker-compose restart backend`
+
+**Available Models:**
+- `llama2` - General purpose (recommended)
+- `mistral:7b` - Fast and efficient  
+- `codellama:7b` - Code-focused
+- `llama2:13b` - Larger, better quality (requires more RAM)
 
 ## Running the Application
 
@@ -148,8 +154,8 @@ nano .env
 # Start with Ollama profile
 docker-compose --profile ollama up -d
 
-# Pull a model
-docker exec sporty_ollama ollama pull llama2
+# Automatically setup models (or run manually)
+./setup-ollama.sh
 ```
 
 The services will be available at:
