@@ -3,6 +3,7 @@ from fastapi import FastAPI, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 import json
+import os
 from dotenv import load_dotenv
 from .container import Container
 
@@ -16,9 +17,14 @@ logger = logging.getLogger(__name__)
 app = FastAPI()
 
 # Add CORS middleware
+def get_cors_origins():
+    """Get CORS origins from environment variable."""
+    origins_env = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
+    return [origin.strip() for origin in origins_env.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # React dev server
+    allow_origins=get_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

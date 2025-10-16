@@ -17,7 +17,11 @@ class AuthController(BaseController):
         self.token_service = token_service
         self.strava_client_id = os.getenv("STRAVA_CLIENT_ID")
         self.strava_client_secret = os.getenv("STRAVA_CLIENT_SECRET")
-        self.redirect_uri = "http://localhost:3000/callback"
+        # Use environment variable for redirect URI, fallback to localhost for development
+        self.redirect_uri = os.getenv("STRAVA_REDIRECT_URI", "http://localhost:3000/callback")
+        if not self.redirect_uri:
+            logger.warning("FRONTEND_URL not set, using default localhost redirect URI")
+            self.redirect_uri = "http://localhost:3000/callback"
     
     def get_auth_url(self) -> Dict[str, Any]:
         """Get Strava OAuth2 authorization URL."""
