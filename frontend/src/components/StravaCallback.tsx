@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
-interface CallbackResponse {
-  success: boolean;
-  message: string;
-  data: {
-    status: string;
-    athlete_id?: number;
-  };
-}
 
 const StravaCallback: React.FC = () => {
   const [status, setStatus] = useState<string>('Processing...');

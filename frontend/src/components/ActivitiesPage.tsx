@@ -16,9 +16,7 @@ import {
   ListItemText,
   ListItemIcon,
   Divider,
-  Paper,
-  Stack,
-  IconButton
+  Stack
 } from '@mui/material';
 import {
   DirectionsRun as RunIcon,
@@ -33,7 +31,7 @@ import {
   EmojiEvents as AchievementIcon
 } from '@mui/icons-material';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 interface Activity {
   id: number;
