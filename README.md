@@ -129,20 +129,43 @@ STRAVA_CLIENT_SECRET=your_strava_client_secret_here
 
 ## Running the Application
 
-### Backend (FastAPI)
+### Option 1: Docker Compose (Recommended)
 
+**Quick Start:**
+```bash
+# Copy environment template
+cp env.example .env
+
+# Edit .env with your credentials
+nano .env
+
+# Deploy with Docker Compose
+./deploy.sh
+```
+
+**With Ollama (Free AI):**
+```bash
+# Start with Ollama profile
+docker-compose --profile ollama up -d
+
+# Pull a model
+docker exec sporty_ollama ollama pull llama2
+```
+
+The services will be available at:
+- **API**: http://localhost:8000
+- **Documentation**: http://localhost:8000/docs
+- **Health Check**: http://localhost:8000/health
+
+### Option 2: Manual Setup
+
+**Backend (FastAPI):**
 ```bash
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 uvicorn app.main:app --reload
 ```
 
-The API will be available at:
-- **API**: http://localhost:8000
-- **Documentation**: http://localhost:8000/docs
-- **Alternative Docs**: http://localhost:8000/redoc
-
-### Frontend (React)
-
+**Frontend (React):**
 ```bash
 cd frontend
 npm install
@@ -152,8 +175,21 @@ npm run dev
 The React app will be available at:
 - **Frontend**: http://localhost:3000
 
-### Production Mode
+### Production Deployment
 
+**Using Docker Compose:**
+```bash
+# Copy production environment template
+cp env.prod.example .env.prod
+
+# Edit production environment variables
+nano .env.prod
+
+# Deploy to production
+./deploy-prod.sh
+```
+
+**Manual Production:**
 ```bash
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
@@ -218,7 +254,13 @@ sporty/
 ├── requirements.txt           # Python dependencies
 ├── .env                       # Environment variables (not in git)
 ├── env.example               # Environment variables template
-├── docker-compose.yml        # PostgreSQL database setup
+├── env.prod.example          # Production environment template
+├── Dockerfile                # Backend Docker image
+├── docker-compose.yml        # Development Docker setup
+├── docker-compose.prod.yml   # Production Docker setup
+├── nginx.conf                # Nginx configuration
+├── deploy.sh                 # Development deployment script
+├── deploy-prod.sh            # Production deployment script
 ├── setup_database.sh         # Database setup script
 └── README.md                  # This file
 ```
