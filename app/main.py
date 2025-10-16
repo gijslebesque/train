@@ -118,6 +118,18 @@ def get_token_status():
     }
 
 
+@app.get("/storage_info")
+def get_storage_info():
+    """Get information about the current storage method."""
+    use_database = os.getenv("USE_DATABASE", "false").lower() == "true"
+    
+    return {
+        "storage_type": "database" if use_database else "in_memory",
+        "database_url": os.getenv("DATABASE_URL") if use_database else None,
+        "description": "Tokens persist across restarts" if use_database else "Tokens lost on restart"
+    }
+
+
 @app.get("/activities")
 def get_activities():
     """Fetch recent Strava activities."""

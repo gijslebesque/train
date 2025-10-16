@@ -56,12 +56,39 @@ cp env.example .env
 Edit `.env` with your credentials:
 
 ```env
+# Database Configuration (optional)
+USE_DATABASE=false
+DATABASE_URL=postgresql://user:password@localhost:5432/sporty
+
+# OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key_here
+
+# Strava Configuration
 STRAVA_CLIENT_ID=your_strava_client_id_here
 STRAVA_CLIENT_SECRET=your_strava_client_secret_here
 ```
 
-### 5. Get API Credentials
+### 5. Database Setup (Optional)
+
+**Option A: Use In-Memory Storage (Default)**
+- No additional setup required
+- Tokens are stored in memory (lost on restart)
+
+**Option B: Use PostgreSQL Database**
+- **Using Docker (Recommended):**
+  ```bash
+  docker-compose up -d
+  ```
+- **Using Local PostgreSQL:**
+  ```bash
+  ./setup_database.sh
+  ```
+- **Manual Setup:**
+  1. Install PostgreSQL
+  2. Create database: `createdb sporty`
+  3. Set `USE_DATABASE=true` in `.env`
+
+### 6. Get API Credentials
 
 #### Strava API Setup
 1. Go to [Strava API Settings](https://www.strava.com/settings/api)
