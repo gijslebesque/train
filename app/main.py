@@ -2,6 +2,7 @@
 from fastapi import FastAPI, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 import logging
+import json
 from dotenv import load_dotenv
 from .container import Container
 
@@ -26,6 +27,18 @@ app.add_middleware(
 # Initialize dependency injection container
 container = Container()
 
+
+def create_response_with_status(data: dict) -> Response:
+    """Create a FastAPI Response with the appropriate status code from the data."""
+    status_code = data.get("_status_code", 200)
+    # Remove _status_code from the response body
+    response_data = {k: v for k, v in data.items() if k != "_status_code"}
+    return Response(
+        content=json.dumps(response_data),
+        status_code=status_code,
+        media_type="application/json"
+    )
+
 @app.get("/")
 def root():
     """Root endpoint."""
@@ -35,46 +48,54 @@ def root():
 @app.get("/health")
 def health_check():
     """Health check endpoint."""
-    return container.system_controller.get_health_status()
+    result = container.system_controller.get_health_status()
+    return create_response_with_status(result)
 
 
 @app.get("/auth/strava")
 def authorize_strava():
     """Redirect user to Strava OAuth2 authorization."""
-    return container.auth_controller.get_auth_url()
+    result = container.auth_controller.get_auth_url()
+    return create_response_with_status(result)
 
 
 @app.get("/exchange_token")
 def exchange_token(code: str):
     """Exchange code for access token."""
-    return container.auth_controller.exchange_token(code)
+    result = container.auth_controller.exchange_token(code)
+    return create_response_with_status(result)
 
 
 @app.get("/token_status")
 def get_token_status():
     """Get current token status."""
-    return container.auth_controller.get_token_status()
+    result = container.auth_controller.get_token_status()
+    return create_response_with_status(result)
 
 
 @app.get("/storage_info")
 def get_storage_info():
     """Get information about the current storage method."""
-    return container.system_controller.get_storage_info()
+    result = container.system_controller.get_storage_info()
+    return create_response_with_status(result)
 
 
 @app.get("/activities")
 def get_activities():
     """Fetch recent Strava activities."""
-    return container.activity_controller.get_activities()
+    result = container.activity_controller.get_activities()
+    return create_response_with_status(result)
 
 
 @app.get("/recommendations")
 def get_training_recommendations():
     """Generate training suggestions using the LLM."""
-    return container.recommendation_controller.get_training_recommendations()
+    result = container.recommendation_controller.get_training_recommendations()
+    return create_response_with_status(result)
 
 
 @app.get("/ai_provider_info")
 def get_ai_provider_info():
     """Get information about the current AI provider."""
-    return container.recommendation_controller.get_provider_info()
+    result = container.recommendation_controller.get_provider_info()
+    return create_response_with_status(result)

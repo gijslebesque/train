@@ -13,6 +13,7 @@ class AuthController(BaseController):
     """Controller for authentication operations."""
     
     def __init__(self, token_service: TokenService):
+        super().__init__()  # Initialize base controller
         self.token_service = token_service
         self.strava_client_id = os.getenv("STRAVA_CLIENT_ID")
         self.strava_client_secret = os.getenv("STRAVA_CLIENT_SECRET")

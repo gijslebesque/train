@@ -27,6 +27,7 @@ class RecommendationController(BaseController):
             activity_controller: Controller for fetching activities
             recommendation_service: Service for generating AI recommendations
         """
+        super().__init__()  # Initialize base controller
         self.token_service = token_service
         self.activity_controller = activity_controller
         self.recommendation_service = recommendation_service

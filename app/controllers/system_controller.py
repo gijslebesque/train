@@ -11,6 +11,9 @@ from ..controllers.base_controller import BaseController
 class SystemController(BaseController):
     """Controller for system operations."""
     
+    def __init__(self):
+        super().__init__()  # Initialize base controller
+    
     def get_storage_info(self) -> Dict[str, Any]:
         """Get information about the current storage method."""
         use_database = os.getenv("USE_DATABASE", "false").lower() == "true"

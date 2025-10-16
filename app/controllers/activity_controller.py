@@ -15,6 +15,7 @@ class ActivityController(BaseController):
     """Controller for activity operations."""
     
     def __init__(self, token_service: TokenService):
+        super().__init__()  # Initialize base controller
         self.token_service = token_service
         self.strava_base = "https://www.strava.com/api/v3"
     

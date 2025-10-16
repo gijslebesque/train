@@ -31,7 +31,7 @@ class BaseController(ABC):
             "success": True,
             "message": message,
             "data": data,
-            "status_code": status_code or self.default_status_codes["success"]
+            "_status_code": status_code or self.default_status_codes["success"]
         }
     
     def created_response(self, data: Any, message: str = "Created", status_code: Optional[int] = None) -> Dict[str, Any]:
@@ -40,7 +40,7 @@ class BaseController(ABC):
             "success": True,
             "message": message,
             "data": data,
-            "status_code": status_code or self.default_status_codes["created"]
+            "_status_code": status_code or self.default_status_codes["created"]
         }
     
     def accepted_response(self, data: Any, message: str = "Accepted", status_code: Optional[int] = None) -> Dict[str, Any]:
@@ -49,7 +49,7 @@ class BaseController(ABC):
             "success": True,
             "message": message,
             "data": data,
-            "status_code": status_code or self.default_status_codes["accepted"]
+            "_status_code": status_code or self.default_status_codes["accepted"]
         }
     
     def no_content_response(self, message: str = "No Content", status_code: Optional[int] = None) -> Dict[str, Any]:
@@ -58,7 +58,7 @@ class BaseController(ABC):
             "success": True,
             "message": message,
             "data": None,
-            "status_code": status_code or self.default_status_codes["no_content"]
+            "_status_code": status_code or self.default_status_codes["no_content"]
         }
     
     def error_response(self, message: str, error_code: str = "error", status_code: Optional[int] = None) -> Dict[str, Any]:
@@ -67,7 +67,7 @@ class BaseController(ABC):
             "success": False,
             "error": error_code,
             "message": message,
-            "status_code": status_code or self.default_status_codes["error"]
+            "_status_code": status_code or self.default_status_codes["error"]
         }
     
     def unauthorized_response(self, message: str = "Unauthorized", status_code: Optional[int] = None) -> Dict[str, Any]:
@@ -76,7 +76,7 @@ class BaseController(ABC):
             "success": False,
             "error": "unauthorized",
             "message": message,
-            "status_code": status_code or self.default_status_codes["unauthorized"]
+            "_status_code": status_code or self.default_status_codes["unauthorized"]
         }
     
     def forbidden_response(self, message: str = "Forbidden", status_code: Optional[int] = None) -> Dict[str, Any]:
@@ -85,7 +85,7 @@ class BaseController(ABC):
             "success": False,
             "error": "forbidden",
             "message": message,
-            "status_code": status_code or self.default_status_codes["forbidden"]
+            "_status_code": status_code or self.default_status_codes["forbidden"]
         }
     
     def not_found_response(self, message: str = "Not Found", status_code: Optional[int] = None) -> Dict[str, Any]:
@@ -94,7 +94,7 @@ class BaseController(ABC):
             "success": False,
             "error": "not_found",
             "message": message,
-            "status_code": status_code or self.default_status_codes["not_found"]
+            "_status_code": status_code or self.default_status_codes["not_found"]
         }
     
     def internal_error_response(self, message: str = "Internal Server Error", status_code: Optional[int] = None) -> Dict[str, Any]:
@@ -103,5 +103,5 @@ class BaseController(ABC):
             "success": False,
             "error": "internal_error",
             "message": message,
-            "status_code": status_code or self.default_status_codes["internal_error"]
+            "_status_code": status_code or self.default_status_codes["internal_error"]
         }
