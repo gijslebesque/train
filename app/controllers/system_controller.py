@@ -19,7 +19,7 @@ class SystemController(BaseController):
             "storage_type": "database" if use_database else "in_memory",
             "database_url": os.getenv("DATABASE_URL") if use_database else None,
             "description": "Tokens persist across restarts" if use_database else "Tokens lost on restart"
-        }, "Storage information retrieved")
+        }, "Storage information retrieved successfully")
     
     def get_health_status(self) -> Dict[str, Any]:
         """Get application health status."""

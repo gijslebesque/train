@@ -1,7 +1,6 @@
 # app/main.py
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
-import os
 import logging
 from dotenv import load_dotenv
 from .container import Container
@@ -26,7 +25,6 @@ app.add_middleware(
 
 # Initialize dependency injection container
 container = Container()
-
 
 @app.get("/")
 def root():
