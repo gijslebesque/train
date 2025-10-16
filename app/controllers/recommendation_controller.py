@@ -3,14 +3,13 @@
 Recommendation controller for AI-powered training suggestions.
 """
 
-import os
-import tiktoken
 import logging
 from typing import Dict, Any
-from openai import OpenAI
+
 from ..controllers.base_controller import BaseController
 from ..services.token_service import TokenService
-from ..data_processor import calculate_performance_metrics, create_performance_summary
+from ..services.recommendation_service import RecommendationService
+from ..domain.ai_service import AIProviderError
 from ..controllers.activity_controller import ActivityController
 
 logger = logging.getLogger(__name__)
@@ -19,81 +18,71 @@ logger = logging.getLogger(__name__)
 class RecommendationController(BaseController):
     """Controller for AI recommendation operations."""
     
-    def __init__(self, token_service: TokenService, activity_controller: ActivityController):
+    def __init__(self, token_service: TokenService, activity_controller: ActivityController, recommendation_service: RecommendationService):
+        """
+        Initialize recommendation controller.
+        
+        Args:
+            token_service: Service for managing Strava tokens
+            activity_controller: Controller for fetching activities
+            recommendation_service: Service for generating AI recommendations
+        """
         self.token_service = token_service
         self.activity_controller = activity_controller
-        self.openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.tokenizer = tiktoken.encoding_for_model("gpt-3.5-turbo")
-    
-    def count_tokens(self, text: str) -> int:
-        """Count the number of tokens in a text string."""
-        return len(self.tokenizer.encode(text))
+        self.recommendation_service = recommendation_service
+        
+        logger.info("RecommendationController initialized")
     
     def get_training_recommendations(self) -> Dict[str, Any]:
         """Generate training suggestions using AI."""
-        # Get activities first
-        activities_response = self.activity_controller.get_activities()
-        if not activities_response.get("success", False):
-            return activities_response
-        
-        activities_data = activities_response["data"]["activities"]
-        if not activities_data:
-            return self.error_response(
-                "No activities with performance data found", 
-                "no_performance_data"
-            )
-        
-        # Calculate metrics and create summary
-        metrics = calculate_performance_metrics(activities_data)
-        summary = create_performance_summary(activities_data)
-        
-        # Create AI prompt
-        prompt = f"""
-        You are a professional triathlon and fitness coach. Based on this performance data:
-        {summary}
-        
-        Please provide specific, actionable training recommendations for the next week. Focus on:
-        1. Areas for improvement
-        2. Specific training suggestions
-        3. Recovery recommendations
-        4. Performance goals
-        """
-        
-        # Check token usage
-        model = "gpt-3.5-turbo"
-        token_count = self.count_tokens(prompt)
-        
-        # Log token usage
-        logger.info(f"Token usage for {model}: {token_count} tokens")
-        
-        if token_count > 4096:
-            return self.error_response(
-                "The prompt is too long for the selected model. Please reduce the input size.",
-                "token_limit_exceeded"
-            )
-        
         try:
-            completion = self.openai_client.chat.completions.create(
-                model=model,
-                messages=[{"role": "user", "content": prompt}]
+            # Get activities first
+            activities_response = self.activity_controller.get_activities()
+            if not activities_response.get("success", False):
+                return activities_response
+            
+            activities_data = activities_response["data"]["activities"]
+            if not activities_data:
+                return self.error_response(
+                    "No activities with performance data found", 
+                    "no_performance_data"
+                )
+            
+            # Generate recommendations using the service
+            result = self.recommendation_service.generate_training_recommendations(activities_data)
+            
+            return self.success_response(
+                result.to_dict(),
+                "Training recommendations generated successfully"
             )
             
-            response_text = completion.choices[0].message.content
-            response_tokens = self.count_tokens(response_text)
-            
-            logger.info(f"OpenAI API call successful. Response tokens: {response_tokens}")
-            
-            return self.success_response({
-                "summary": summary,
-                "suggestions": response_text,
-                "metrics": metrics,
-                "token_usage": {
-                    "input_tokens": token_count,
-                    "output_tokens": response_tokens,
-                    "total_tokens": token_count + response_tokens
-                }
-            }, "Training recommendations generated successfully")
-            
+        except AIProviderError as e:
+            logger.error(f"AI provider error: {str(e)}")
+            return self.error_response(
+                f"AI service error: {e.message}",
+                e.error_code or "ai_service_error"
+            )
+        except ValueError as e:
+            logger.error(f"Validation error: {str(e)}")
+            return self.error_response(
+                str(e),
+                "validation_error"
+            )
         except Exception as e:
-            logger.error(f"OpenAI API error: {str(e)}")
-            return self.error_response(f"AI service error: {str(e)}", "ai_service_error")
+            logger.error(f"Unexpected error in recommendation generation: {str(e)}")
+            return self.error_response(
+                f"An unexpected error occurred: {str(e)}",
+                "internal_error"
+            )
+    
+    def get_provider_info(self) -> Dict[str, Any]:
+        """Get information about the current AI provider."""
+        try:
+            provider_info = self.recommendation_service.get_provider_info()
+            return self.success_response(provider_info)
+        except Exception as e:
+            logger.error(f"Error getting provider info: {str(e)}")
+            return self.error_response(
+                f"Failed to get provider info: {str(e)}",
+                "provider_info_error"
+            )

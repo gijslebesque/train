@@ -74,3 +74,9 @@ def get_activities():
 def get_training_recommendations():
     """Generate training suggestions using the LLM."""
     return container.recommendation_controller.get_training_recommendations()
+
+
+@app.get("/ai_provider_info")
+def get_ai_provider_info():
+    """Get information about the current AI provider."""
+    return container.recommendation_controller.get_provider_info()
