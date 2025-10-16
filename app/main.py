@@ -1,5 +1,6 @@
 # app/main.py
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import logging
 from dotenv import load_dotenv
@@ -14,8 +15,29 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # React dev server
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Initialize dependency injection container
 container = Container()
+
+
+@app.get("/")
+def root():
+    """Root endpoint."""
+    return {"message": "Sporty API is running!", "version": "1.0.0"}
+
+
+@app.get("/health")
+def health_check():
+    """Health check endpoint."""
+    return container.system_controller.get_health_status()
 
 
 @app.get("/auth/strava")
