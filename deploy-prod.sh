@@ -52,13 +52,13 @@ if docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
         # Wait a bit for Ollama to be ready
         sleep 15
         
-        # Check if llama2 model exists
-        if ! docker exec sporty_ollama ollama list | grep -q "llama2"; then
-            echo "📥 Pulling llama2 model (this may take a few minutes)..."
-            docker exec sporty_ollama ollama pull llama2
-            echo "✅ llama2 model downloaded!"
+        # Check if mistral:7b model exists
+        if ! docker exec sporty_ollama ollama list | grep -q "mistral:7b"; then
+            echo "📥 Pulling mistral:7b model (this may take a few minutes)..."
+            docker exec sporty_ollama ollama pull mistral:7b
+            echo "✅ mistral:7b model downloaded!"
         else
-            echo "✅ llama2 model already available!"
+            echo "✅ mistral:7b model already available!"
         fi
     fi
     

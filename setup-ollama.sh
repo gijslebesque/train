@@ -48,8 +48,8 @@ echo "📋 Installed models:"
 docker exec sporty_ollama ollama list
 
 echo ""
-echo "🧪 Testing llama2 model..."
-docker exec sporty_ollama ollama run llama2 "Hello! Can you help me with fitness training?" --verbose
+echo "🧪 Testing mistral:7b model..."
+docker exec sporty_ollama ollama run mistral:7b "Hello! Can you help me with fitness training?" --verbose
 
 echo ""
 echo "🎉 Ollama setup complete!"
