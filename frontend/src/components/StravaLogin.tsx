@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8000';
@@ -22,7 +23,8 @@ interface TokenStatus {
 }
 
 const StravaLogin: React.FC = () => {
-  const [authUrl, setAuthUrl] = useState<string>('');
+  const navigate = useNavigate();
+  const [_, setAuthUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [tokenStatus, setTokenStatus] = useState<TokenStatus | null>(null);
 
@@ -125,11 +127,49 @@ const StravaLogin: React.FC = () => {
                 borderRadius: '4px',
                 cursor: 'pointer',
                 fontSize: '1rem',
-                width: '100%'
+                width: '100%',
+                marginBottom: '1rem'
               }}
             >
               Logout from Strava
             </button>
+            
+            <div style={{
+              display: 'flex',
+              gap: '1rem'
+            }}>
+              <button
+                onClick={() => navigate('/activities')}
+                style={{
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  flex: 1
+                }}
+              >
+                View Activities
+              </button>
+              
+              <button
+                onClick={() => navigate('/recommendations')}
+                style={{
+                  backgroundColor: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  flex: 1
+                }}
+              >
+                Get Recommendations
+              </button>
+            </div>
           </div>
         ) : (
           <div>
