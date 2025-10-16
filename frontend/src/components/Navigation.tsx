@@ -1,68 +1,69 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  Container
+} from '@mui/material';
+import {
+  Home as HomeIcon,
+  DirectionsRun as ActivitiesIcon,
+  Psychology as RecommendationsIcon
+} from '@mui/icons-material';
 
 const Navigation: React.FC = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', label: '🏠 Home', icon: '🏠' },
-    { path: '/activities', label: '🏃‍♂️ Activities', icon: '🏃‍♂️' },
-    { path: '/recommendations', label: '🤖 Recommendations', icon: '🤖' }
+    { path: '/', label: 'Home', icon: <HomeIcon /> },
+    { path: '/activities', label: 'Activities', icon: <ActivitiesIcon /> },
+    { path: '/recommendations', label: 'Recommendations', icon: <RecommendationsIcon /> }
   ];
 
   return (
-    <nav style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      backgroundColor: '#343a40',
-      padding: '1rem 0',
-      marginBottom: '2rem'
-    }}>
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '0 2rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-      }}>
-        <Link
-          to="/"
-          style={{
-            color: 'white',
-            textDecoration: 'none',
-            fontSize: '1.5rem',
-            fontWeight: 'bold'
-          }}
-        >
-          🚴‍♂️ Sporty
-        </Link>
-        
-        <div style={{
-          display: 'flex',
-          gap: '1rem'
-        }}>
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              style={{
-                color: location.pathname === item.path ? '#ffc107' : 'white',
-                textDecoration: 'none',
-                padding: '0.5rem 1rem',
-                borderRadius: '4px',
-                backgroundColor: location.pathname === item.path ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                transition: 'all 0.2s ease'
-              }}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </div>
-    </nav>
+    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <Container maxWidth="lg">
+        <Toolbar>
+          <Typography
+            variant="h6"
+            component={Link}
+            to="/"
+            sx={{
+              flexGrow: 1,
+              color: 'inherit',
+              textDecoration: 'none',
+              fontWeight: 'bold'
+            }}
+          >
+            🚴‍♂️ Sporty
+          </Typography>
+          
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {navItems.map((item) => (
+              <Button
+                key={item.path}
+                component={Link}
+                to={item.path}
+                startIcon={item.icon}
+                color="inherit"
+                variant={location.pathname === item.path ? 'contained' : 'text'}
+                sx={{
+                  backgroundColor: location.pathname === item.path ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                  }
+                }}
+              >
+                {item.label}
+              </Button>
+            ))}
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
   );
 };
 

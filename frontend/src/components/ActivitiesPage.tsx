@@ -1,5 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {
+  Container,
+  Typography,
+  Button,
+  Box,
+  Alert,
+  CircularProgress,
+  Card,
+  CardContent,
+  Grid,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Divider,
+  Paper,
+  Stack,
+  IconButton
+} from '@mui/material';
+import {
+  DirectionsRun as RunIcon,
+  DirectionsBike as BikeIcon,
+  Pool as SwimIcon,
+  DirectionsWalk as WalkIcon,
+  Hiking as HikeIcon,
+  Refresh as RefreshIcon,
+  Speed as SpeedIcon,
+  Timer as TimerIcon,
+  Terrain as ElevationIcon,
+  EmojiEvents as AchievementIcon
+} from '@mui/icons-material';
 
 const API_BASE_URL = 'http://localhost:8000';
 
@@ -104,263 +136,211 @@ const ActivitiesPage: React.FC = () => {
 
   const getSportIcon = (sportType: string) => {
     switch (sportType.toLowerCase()) {
-      case 'ride': return '🚴‍♂️';
-      case 'run': return '🏃‍♂️';
-      case 'swim': return '🏊‍♂️';
-      case 'walk': return '🚶‍♂️';
-      case 'hike': return '🥾';
-      default: return '🏃‍♂️';
+      case 'ride': return <BikeIcon />;
+      case 'run': return <RunIcon />;
+      case 'swim': return <SwimIcon />;
+      case 'walk': return <WalkIcon />;
+      case 'hike': return <HikeIcon />;
+      default: return <RunIcon />;
     }
   };
 
   if (isLoading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        fontSize: '1.2rem',
-        color: '#666'
-      }}>
-        Loading activities...
-      </div>
+      <Container maxWidth="lg" sx={{ mt: 8, mb: 4 }}>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+          <Stack alignItems="center" spacing={2}>
+            <CircularProgress size={40} />
+            <Typography variant="h6" color="text.secondary">
+              Loading activities...
+            </Typography>
+          </Stack>
+        </Box>
+      </Container>
     );
   }
 
   if (error) {
     return (
-      <div style={{ 
-        maxWidth: '600px', 
-        margin: '0 auto', 
-        padding: '2rem',
-        textAlign: 'center'
-      }}>
-        <div style={{
-          backgroundColor: '#f8d7da',
-          color: '#721c24',
-          padding: '1rem',
-          borderRadius: '4px',
-          marginBottom: '1rem'
-        }}>
-          ❌ {error}
-        </div>
-        <button
+      <Container maxWidth="md" sx={{ mt: 8, mb: 4 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button
+          variant="contained"
           onClick={fetchActivities}
-          style={{
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            padding: '0.75rem 1.5rem',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '1rem'
-          }}
+          startIcon={<RefreshIcon />}
         >
           Try Again
-        </button>
-      </div>
+        </Button>
+      </Container>
     );
   }
 
   return (
-    <div style={{ 
-      marginTop: '120px',
-      maxWidth: '1200px', 
-      margin: '0 auto', 
-      padding: '2rem',
-      fontFamily: 'Arial, sans-serif'
-    }}>
+    <Container maxWidth="lg" sx={{ mt: 8, mb: 4 }}>
       {/* Header */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '2rem',
-        paddingBottom: '1rem',
-        borderBottom: '2px solid #e9ecef'
-      }}>
-        <h1 style={{ color: '#333', margin: 0 }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Typography variant="h4" component="h1" color="primary">
           🏃‍♂️ My Activities
-        </h1>
-        <button
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<RefreshIcon />}
           onClick={fetchActivities}
-          style={{
-            backgroundColor: '#28a745',
-            color: 'white',
-            border: 'none',
-            padding: '0.5rem 1rem',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '0.9rem'
-          }}
+          color="success"
         >
-          🔄 Refresh
-        </button>
-      </div>
+          Refresh
+        </Button>
+      </Box>
 
       {/* Stats Cards */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '1rem',
-        marginBottom: '2rem'
-      }}>
-        <div style={{
-          backgroundColor: '#f8f9fa',
-          padding: '1.5rem',
-          borderRadius: '8px',
-          textAlign: 'center',
-          border: '1px solid #e9ecef'
-        }}>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#007bff' }}>
-            {stats.totalActivities}
-          </div>
-          <div style={{ color: '#666', fontSize: '0.9rem' }}>Total Activities</div>
-        </div>
+      <Grid container spacing={3} mb={4}>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Typography variant="h3" color="primary" fontWeight="bold">
+                {stats.totalActivities}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Total Activities
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
         
-        <div style={{
-          backgroundColor: '#f8f9fa',
-          padding: '1.5rem',
-          borderRadius: '8px',
-          textAlign: 'center',
-          border: '1px solid #e9ecef'
-        }}>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#28a745' }}>
-            {stats.totalDistance.toFixed(1)} km
-          </div>
-          <div style={{ color: '#666', fontSize: '0.9rem' }}>Total Distance</div>
-        </div>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Typography variant="h3" color="success.main" fontWeight="bold">
+                {stats.totalDistance.toFixed(1)} km
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Total Distance
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
         
-        <div style={{
-          backgroundColor: '#f8f9fa',
-          padding: '1.5rem',
-          borderRadius: '8px',
-          textAlign: 'center',
-          border: '1px solid #e9ecef'
-        }}>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#ffc107' }}>
-            {formatDuration(stats.totalTime)}
-          </div>
-          <div style={{ color: '#666', fontSize: '0.9rem' }}>Total Time</div>
-        </div>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Typography variant="h3" color="warning.main" fontWeight="bold">
+                {formatDuration(stats.totalTime)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Total Time
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
         
-        <div style={{
-          backgroundColor: '#f8f9fa',
-          padding: '1.5rem',
-          borderRadius: '8px',
-          textAlign: 'center',
-          border: '1px solid #e9ecef'
-        }}>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#dc3545' }}>
-            {stats.avgSpeed.toFixed(1)} km/h
-          </div>
-          <div style={{ color: '#666', fontSize: '0.9rem' }}>Avg Speed</div>
-        </div>
-      </div>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card>
+            <CardContent sx={{ textAlign: 'center' }}>
+              <Typography variant="h3" color="error.main" fontWeight="bold">
+                {stats.avgSpeed.toFixed(1)} km/h
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Avg Speed
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Activities List */}
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        overflow: 'hidden'
-      }}>
-        <div style={{
-          backgroundColor: '#f8f9fa',
-          padding: '1rem',
-          borderBottom: '1px solid #e9ecef',
-          fontWeight: 'bold',
-          color: '#333'
-        }}>
-          Recent Activities ({activities.length})
-        </div>
-        
-        {activities.length === 0 ? (
-          <div style={{
-            padding: '2rem',
-            textAlign: 'center',
-            color: '#666'
-          }}>
-            No activities found. Make sure you're connected to Strava.
-          </div>
-        ) : (
-          <div>
-            {activities.map((activity, index) => (
-              <div
-                key={activity.id}
-                style={{
-                  padding: '1rem',
-                  borderBottom: index < activities.length - 1 ? '1px solid #e9ecef' : 'none',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    marginBottom: '0.5rem'
-                  }}>
-                    <span style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Recent Activities ({activities.length})
+          </Typography>
+          
+          {activities.length === 0 ? (
+            <Alert severity="info">
+              No activities found. Make sure you're connected to Strava.
+            </Alert>
+          ) : (
+            <List>
+              {activities.map((activity, index) => (
+                <React.Fragment key={activity.id}>
+                  <ListItem alignItems="flex-start">
+                    <ListItemIcon>
                       {getSportIcon(activity.sport_type)}
-                    </span>
-                    <h3 style={{ 
-                      margin: 0, 
-                      fontSize: '1.1rem',
-                      color: '#333'
-                    }}>
-                      {activity.name}
-                    </h3>
-                  </div>
-                  
-                  <div style={{
-                    fontSize: '0.9rem',
-                    color: '#666',
-                    marginBottom: '0.5rem'
-                  }}>
-                    {formatDate(activity.start_date_local)} • {activity.sport_type}
-                  </div>
-                  
-                  <div style={{
-                    display: 'flex',
-                    gap: '1rem',
-                    fontSize: '0.85rem',
-                    color: '#666'
-                  }}>
-                    <span>📏 {activity.distance_km.toFixed(2)} km</span>
-                    <span>⏱️ {formatDuration(activity.moving_time_minutes)}</span>
-                    {activity.average_speed_kmh && (
-                      <span>🏃‍♂️ {activity.average_speed_kmh.toFixed(1)} km/h</span>
-                    )}
-                    {activity.total_elevation_gain > 0 && (
-                      <span>⛰️ {activity.total_elevation_gain} m</span>
-                    )}
-                  </div>
-                </div>
-                
-                <div style={{
-                  textAlign: 'right',
-                  fontSize: '0.8rem',
-                  color: '#666'
-                }}>
-                  {activity.achievement_count > 0 && (
-                    <div style={{ color: '#ffc107' }}>
-                      🏆 {activity.achievement_count} achievements
-                    </div>
-                  )}
-                  {activity.pr_count > 0 && (
-                    <div style={{ color: '#28a745' }}>
-                      🎯 {activity.pr_count} PRs
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Box display="flex" justifyContent="space-between" alignItems="center">
+                          <Typography variant="h6" component="span">
+                            {activity.name}
+                          </Typography>
+                          <Box>
+                            {activity.achievement_count > 0 && (
+                              <Chip
+                                icon={<AchievementIcon />}
+                                label={`${activity.achievement_count} achievements`}
+                                color="warning"
+                                size="small"
+                                sx={{ mr: 1 }}
+                              />
+                            )}
+                            {activity.pr_count > 0 && (
+                              <Chip
+                                label={`${activity.pr_count} PRs`}
+                                color="success"
+                                size="small"
+                              />
+                            )}
+                          </Box>
+                        </Box>
+                      }
+                      secondary={
+                        <Box>
+                          <Typography variant="body2" color="text.secondary" gutterBottom>
+                            {formatDate(activity.start_date_local)} • {activity.sport_type}
+                          </Typography>
+                          <Stack direction="row" spacing={2} flexWrap="wrap">
+                            <Chip
+                              icon={<SpeedIcon />}
+                              label={`${activity.distance_km.toFixed(2)} km`}
+                              variant="outlined"
+                              size="small"
+                            />
+                            <Chip
+                              icon={<TimerIcon />}
+                              label={formatDuration(activity.moving_time_minutes)}
+                              variant="outlined"
+                              size="small"
+                            />
+                            {activity.average_speed_kmh && (
+                              <Chip
+                                icon={<SpeedIcon />}
+                                label={`${activity.average_speed_kmh.toFixed(1)} km/h`}
+                                variant="outlined"
+                                size="small"
+                              />
+                            )}
+                            {activity.total_elevation_gain > 0 && (
+                              <Chip
+                                icon={<ElevationIcon />}
+                                label={`${activity.total_elevation_gain} m`}
+                                variant="outlined"
+                                size="small"
+                              />
+                            )}
+                          </Stack>
+                        </Box>
+                      }
+                    />
+                  </ListItem>
+                  {index < activities.length - 1 && <Divider />}
+                </React.Fragment>
+              ))}
+            </List>
+          )}
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 
