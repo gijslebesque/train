@@ -94,6 +94,56 @@ def exchange_token(code: str):
     return {"status": "connected"}
 
 
+def extract_performance_stats(activities):
+    """Extract only performance-related stats from Strava activities."""
+    performance_stats = []
+    
+    for activity in activities:
+        # Only include activities with performance data
+        if activity.get("distance") and activity.get("moving_time"):
+            stats = {
+                "id": activity.get("id"),
+                "name": activity.get("name"),
+                "type": activity.get("type"),
+                "sport_type": activity.get("sport_type"),
+                "start_date": activity.get("start_date"),
+                "start_date_local": activity.get("start_date_local"),
+                
+                # Performance metrics
+                "distance": activity.get("distance"),  # meters
+                "moving_time": activity.get("moving_time"),  # seconds
+                "elapsed_time": activity.get("elapsed_time"),  # seconds
+                "total_elevation_gain": activity.get("total_elevation_gain"),  # meters
+                "average_speed": activity.get("average_speed"),  # m/s
+                "max_speed": activity.get("max_speed"),  # m/s
+                
+                # Heart rate data (if available)
+                "has_heartrate": activity.get("has_heartrate"),
+                "average_heartrate": activity.get("average_heartrate"),
+                "max_heartrate": activity.get("max_heartrate"),
+                
+                # Elevation data (if available)
+                "elev_high": activity.get("elev_high"),
+                "elev_low": activity.get("elev_low"),
+                
+                # Additional performance indicators
+                "achievement_count": activity.get("achievement_count"),
+                "pr_count": activity.get("pr_count"),
+            }
+            
+            # Calculate derived metrics
+            if stats["distance"] and stats["moving_time"]:
+                stats["distance_km"] = round(stats["distance"] / 1000, 2)
+                stats["moving_time_minutes"] = round(stats["moving_time"] / 60, 2)
+                stats["average_speed_kmh"] = round(stats["average_speed"] * 3.6, 2) if stats["average_speed"] else None
+                stats["max_speed_kmh"] = round(stats["max_speed"] * 3.6, 2) if stats["max_speed"] else None
+                stats["pace_per_km"] = round(stats["moving_time"] / (stats["distance"] / 1000), 2) if stats["distance"] > 0 else None
+            
+            performance_stats.append(stats)
+    
+    return performance_stats
+
+
 @app.get("/activities")
 def get_activities():
     """Fetch recent Strava activities."""
@@ -106,7 +156,18 @@ def get_activities():
         headers={"Authorization": f"Bearer {access_token}"},
         params={"per_page": 50},
     )
-    return res.json()
+    
+    if res.status_code != 200:
+        return {"error": "strava_api_error", "message": res.text}
+    
+    raw_activities = res.json()
+    performance_stats = extract_performance_stats(raw_activities)
+    
+    return {
+        "total_activities": len(raw_activities),
+        "performance_activities": len(performance_stats),
+        "activities": performance_stats
+    }
 
 
 @app.get("/recommendations")
@@ -116,15 +177,45 @@ def get_training_recommendations():
     if "error" in activities:
         return activities
 
-    # Example: summarize key metrics
-    total_distance = sum(a["distance"] for a in activities)
-    avg_speed = sum(a["average_speed"] for a in activities) / len(activities)
-    summary = f"Total distance: {total_distance/1000:.1f} km, avg speed: {avg_speed*3.6:.1f} km/h."
+    # Extract performance data from the new filtered response
+    activities_data = activities.get("activities", [])
+    if not activities_data:
+        return {"error": "no_performance_data", "message": "No activities with performance data found"}
+
+    # Calculate comprehensive performance metrics
+    total_distance_km = sum(a["distance_km"] for a in activities_data)
+    total_time_minutes = sum(a["moving_time_minutes"] for a in activities_data)
+    avg_speed_kmh = sum(a["average_speed_kmh"] for a in activities_data if a["average_speed_kmh"]) / len([a for a in activities_data if a["average_speed_kmh"]])
+    avg_heartrate = sum(a["average_heartrate"] for a in activities_data if a["average_heartrate"]) / len([a for a in activities_data if a["average_heartrate"]])
+    total_elevation = sum(a["total_elevation_gain"] for a in activities_data)
+    
+    # Activity type breakdown
+    activity_types = {}
+    for activity in activities_data:
+        sport_type = activity.get("sport_type", "Unknown")
+        activity_types[sport_type] = activity_types.get(sport_type, 0) + 1
+
+    # Create detailed summary
+    summary = f"""
+    Performance Summary (Last {len(activities_data)} activities):
+    - Total Distance: {total_distance_km:.1f} km
+    - Total Time: {total_time_minutes:.1f} minutes
+    - Average Speed: {avg_speed_kmh:.1f} km/h
+    - Average Heart Rate: {avg_heartrate:.0f} bpm
+    - Total Elevation: {total_elevation:.0f} m
+    - Activity Types: {', '.join([f'{k}: {v}' for k, v in activity_types.items()])}
+    """
 
     # Ask the LLM for insights
     prompt = f"""
-    You are a cycling coach. Based on this summary: {summary},
-    suggest how I can improve performance next week.
+    You are a professional triathlon and fitness coach. Based on this performance data:
+    {summary}
+    
+    Please provide specific, actionable training recommendations for the next week. Focus on:
+    1. Areas for improvement
+    2. Specific training suggestions
+    3. Recovery recommendations
+    4. Performance goals
     """
 
     # Check token usage before making the request
@@ -167,8 +258,17 @@ def get_training_recommendations():
         
         logger.info("✅ OpenAI API call successful")
         return {
-            "summary": summary, 
+            "summary": summary.strip(), 
             "suggestions": response_text,
+            "metrics": {
+                "total_distance_km": round(total_distance_km, 1),
+                "total_time_minutes": round(total_time_minutes, 1),
+                "avg_speed_kmh": round(avg_speed_kmh, 1),
+                "avg_heartrate": round(avg_heartrate, 0),
+                "total_elevation": round(total_elevation, 0),
+                "activity_count": len(activities_data),
+                "activity_types": activity_types
+            },
             "token_usage": {
                 "input_tokens": token_count,
                 "output_tokens": response_tokens,
