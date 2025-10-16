@@ -42,7 +42,7 @@ class ActivityController(BaseController):
             performance_stats = extract_performance_stats(raw_activities)
             
             return self.success_response({
-                "total_activities": len(raw_activities),
+                "total_activities": len(performance_stats),
                 "performance_activities": len(performance_stats),
                 "activities": performance_stats
             }, "Activities retrieved successfully")
