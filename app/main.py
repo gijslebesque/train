@@ -9,6 +9,7 @@ from typing import Dict
 from openai import OpenAI
 from dotenv import load_dotenv
 from .data_processor import extract_performance_stats, calculate_performance_metrics, create_performance_summary
+from .container import Container
 
 # Load environment variables from .env file
 load_dotenv()
@@ -28,7 +29,8 @@ STRAVA_CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
 REDIRECT_URI = "http://localhost:8000/exchange_token"
 STRAVA_BASE = "https://www.strava.com/api/v3"
 
-tokens = {}  # in-memory store; replace with a DB later
+# Initialize dependency injection container
+container = Container()
 
 
 def count_tokens(text: str) -> int:
@@ -89,18 +91,37 @@ def exchange_token(code: str):
         },
     )
     data = response.json()
-    tokens["access_token"] = data["access_token"]
-    tokens["refresh_token"] = data["refresh_token"]
-    tokens["expires_at"] = data["expires_at"]
+    
+    # Use the token service to store tokens
+    container.token_service.store_tokens(
+        access_token=data["access_token"],
+        refresh_token=data["refresh_token"],
+        expires_at=data["expires_at"],
+        athlete_id=data.get("athlete", {}).get("id")
+    )
+    
     return {"status": "connected"}
 
 
+@app.get("/token_status")
+def get_token_status():
+    """Get current token status."""
+    tokens = container.token_service.get_tokens()
+    if not tokens:
+        return {"status": "no_tokens", "message": "No tokens stored"}
+    
+    return {
+        "status": "tokens_available",
+        "is_expired": tokens.is_expired(),
+        "time_until_expiry": tokens.time_until_expiry(),
+        "athlete_id": tokens.athlete_id
+    }
 
 
 @app.get("/activities")
 def get_activities():
     """Fetch recent Strava activities."""
-    access_token = tokens.get("access_token")
+    access_token = container.token_service.get_access_token()
     if not access_token:
         return {"error": "not_authenticated"}
 
