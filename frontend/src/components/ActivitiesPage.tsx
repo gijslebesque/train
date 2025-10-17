@@ -55,7 +55,7 @@ const ActivitiesPage: React.FC = () => {
       performanceActivities: performance_activities,
       totalDistance: activitiesList.reduce((sum, activity) => sum + activity.distance_km, 0),
       totalTime: activitiesList.reduce((sum, activity) => sum + activity.moving_time_minutes, 0),
-      avgSpeed: activitiesList.length > 0 
+      avgSpeed: activitiesList.length > 0
         ? activitiesList.reduce((sum, activity) => sum + (activity.average_speed_kmh || 0), 0) / activitiesList.length
         : 0
     };
@@ -127,6 +127,25 @@ const ActivitiesPage: React.FC = () => {
     );
   }
 
+  const statsList: { label: string; value: number | string }[] = [
+    {
+      label: 'Total Activities',
+      value: stats.totalActivities
+    },
+    {
+      label: 'Total Distance',
+      value: stats.totalDistance.toFixed(1)
+    },
+    {
+      label: 'Total Time',
+      value: formatDuration(stats.totalTime)
+    },
+    {
+      label: 'Avg Speed',
+      value: stats.avgSpeed.toFixed(1)
+    }
+  ]
+
   return (
     <Container maxWidth="lg" sx={{ mt: '80px', mb: 4 }}>
       {/* Header */}
@@ -147,66 +166,30 @@ const ActivitiesPage: React.FC = () => {
 
       {/* Stats Cards */}
       <Grid container spacing={3} mb={4}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h3" color="primary" fontWeight="bold">
-                {stats.totalActivities}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Total Activities
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h3" color="success.main" fontWeight="bold">
-                {stats.totalDistance.toFixed(1)} km
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Total Distance
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h3" color="warning.main" fontWeight="bold">
-                {formatDuration(stats.totalTime)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Total Time
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-              <Typography variant="h3" color="error.main" fontWeight="bold">
-                {stats.avgSpeed.toFixed(1)} km/h
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Avg Speed
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
 
+        {statsList.map((stat) => (
+          <Grid item xs={12} sm={6} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h3" color="primary" fontWeight="bold">
+                  {stat.value}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {stat.label}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+
+      </Grid>
       {/* Activities List */}
       <Card>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Recent Activities ({activities.length})
           </Typography>
-          
+
           {activities.length === 0 ? (
             <Alert severity="info">
               No activities found. Make sure you're connected to Strava.
