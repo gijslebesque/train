@@ -51,6 +51,8 @@ class RecommendationController(BaseController):
             
             # Generate recommendations using the service
             result = self.recommendation_service.generate_training_recommendations(activities_data)
+
+            print(f"Recommendations: {result}")
             
             return self.success_response(
                 result.to_dict(),
