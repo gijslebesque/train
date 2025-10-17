@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
   Container,
-  Paper,
   Typography,
   Button,
   Box,
@@ -20,6 +19,7 @@ import {
   Visibility as ViewActivitiesIcon,
   Psychology as RecommendationsIcon
 } from '@mui/icons-material';
+import { commonStyles, themeTokens } from '../theme';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
@@ -94,21 +94,21 @@ const StravaLogin: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 8, mb: 4 }}>
-      <Card sx={{ p: 6, backgroundColor: '#111111' }}>
+    <Container maxWidth="md" sx={commonStyles.container}>
+      <Card sx={{ ...commonStyles.card, p: 6 }}>
         <Box textAlign="center" mb={6}>
           <Box sx={{ 
             width: 120, 
             height: 120, 
-            borderRadius: '50%', 
-            backgroundColor: '#ffffff', 
+            borderRadius: themeTokens.borderRadius.full, 
+            backgroundColor: themeTokens.colors.primary[500], 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
             mx: 'auto',
             mb: 4
           }}>
-            <StravaIcon sx={{ fontSize: 60, color: '#000000' }} />
+            <StravaIcon sx={{ fontSize: 60, color: themeTokens.colors.secondary[500] }} />
           </Box>
           <Typography variant="h3" component="h1" gutterBottom color="primary" fontWeight={700}>
             SPORTY
@@ -119,19 +119,11 @@ const StravaLogin: React.FC = () => {
         </Box>
 
         {tokenStatus?.data.status === 'tokens_available' ? (
-          <Card sx={{ mb: 4, backgroundColor: '#1a1a1a', border: '1px solid #333333' }}>
+          <Card sx={{ ...commonStyles.cardElevated, mb: 4 }}>
             <CardContent>
               <Alert 
                 severity="success" 
-                sx={{ 
-                  mb: 3, 
-                  backgroundColor: '#1a1a1a',
-                  border: '1px solid #333333',
-                  color: '#ffffff',
-                  '& .MuiAlert-icon': {
-                    color: '#4caf50'
-                  }
-                }}
+                sx={commonStyles.alertSuccess}
               >
                 <Typography variant="h6" gutterBottom>
                   ✅ Connected to Strava!
@@ -144,8 +136,8 @@ const StravaLogin: React.FC = () => {
                     label="Token expired" 
                     sx={{ 
                       mt: 1, 
-                      backgroundColor: '#ff4444',
-                      color: '#ffffff'
+                      backgroundColor: themeTokens.colors.status.error,
+                      color: themeTokens.colors.text.primary
                     }} 
                     size="small" 
                   />
@@ -154,8 +146,7 @@ const StravaLogin: React.FC = () => {
                     label={`Expires in: ${Math.floor((tokenStatus.data.time_until_expiry || 0) / 3600)} hours`} 
                     sx={{ 
                       mt: 1,
-                      backgroundColor: '#333333',
-                      color: '#ffffff'
+                      ...commonStyles.chipDefault
                     }} 
                     size="small" 
                   />
@@ -170,12 +161,7 @@ const StravaLogin: React.FC = () => {
                     onClick={() => navigate('/activities')}
                     sx={{ 
                       flex: 1,
-                      borderColor: '#333333',
-                      color: '#ffffff',
-                      '&:hover': {
-                        borderColor: '#ffffff',
-                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      }
+                      ...commonStyles.buttonSecondary
                     }}
                   >
                     View Activities
@@ -187,11 +173,7 @@ const StravaLogin: React.FC = () => {
                     onClick={() => navigate('/recommendations')}
                     sx={{ 
                       flex: 1,
-                      backgroundColor: '#ffffff',
-                      color: '#000000',
-                      '&:hover': {
-                        backgroundColor: '#f0f0f0',
-                      }
+                      ...commonStyles.buttonPrimary
                     }}
                   >
                     Get Recommendations
@@ -204,12 +186,10 @@ const StravaLogin: React.FC = () => {
                   onClick={handleLogout}
                   fullWidth
                   sx={{ 
-                    borderColor: '#333333',
-                    color: '#b0b0b0',
+                    ...commonStyles.buttonSecondary,
+                    color: themeTokens.colors.text.secondary,
                     '&:hover': {
-                      borderColor: '#ffffff',
-                      color: '#ffffff',
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      color: themeTokens.colors.text.primary,
                     }
                   }}
                 >
@@ -219,7 +199,7 @@ const StravaLogin: React.FC = () => {
             </CardContent>
           </Card>
         ) : (
-          <Card sx={{ backgroundColor: '#1a1a1a', border: '1px solid #333333' }}>
+          <Card sx={commonStyles.cardElevated}>
             <CardContent>
               <Typography variant="body1" color="text.secondary" paragraph textAlign="center" sx={{ mb: 4 }}>
                 Connect your Strava account to get AI-powered training recommendations based on your activities.
@@ -234,14 +214,10 @@ const StravaLogin: React.FC = () => {
                 fullWidth
                 sx={{ 
                   py: 2,
-                  backgroundColor: '#ffffff',
-                  color: '#000000',
-                  '&:hover': {
-                    backgroundColor: '#f0f0f0',
-                  },
+                  ...commonStyles.buttonPrimary,
                   '&:disabled': {
-                    backgroundColor: '#333333',
-                    color: '#666666',
+                    backgroundColor: themeTokens.colors.border.light,
+                    color: themeTokens.colors.text.disabled,
                   }
                 }}
               >

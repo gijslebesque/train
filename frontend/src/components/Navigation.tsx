@@ -13,6 +13,7 @@ import {
   DirectionsRun as ActivitiesIcon,
   Psychology as RecommendationsIcon
 } from '@mui/icons-material';
+import { commonStyles, themeTokens } from '../theme';
 
 const Navigation: React.FC = () => {
   const location = useLocation();
@@ -28,9 +29,9 @@ const Navigation: React.FC = () => {
       position="fixed" 
       sx={{ 
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        backgroundColor: '#000000',
-        borderBottom: '1px solid #333333',
-        boxShadow: 'none'
+        backgroundColor: themeTokens.colors.background.default,
+        borderBottom: `1px solid ${themeTokens.colors.border.light}`,
+        boxShadow: themeTokens.shadows.none
       }}
     >
       <Container maxWidth="lg">
@@ -41,16 +42,16 @@ const Navigation: React.FC = () => {
             to="/"
             sx={{
               flexGrow: 1,
-              color: '#ffffff',
+              color: themeTokens.colors.text.primary,
               textDecoration: 'none',
-              fontWeight: 700,
+              fontWeight: themeTokens.typography.fontWeight.bold,
               letterSpacing: '-0.02em'
             }}
           >
             SPORTY
           </Typography>
           
-          <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <Box sx={{ display: 'flex', gap: themeTokens.spacing.sm }}>
             {navItems.map((item) => (
               <Button
                 key={item.path}
@@ -59,27 +60,18 @@ const Navigation: React.FC = () => {
                 startIcon={item.icon}
                 variant={location.pathname === item.path ? 'contained' : 'outlined'}
                 sx={{
-                  borderRadius: '8px',
+                  borderRadius: themeTokens.borderRadius.md,
                   px: 2,
                   py: 1,
                   minWidth: 'auto',
                   textTransform: 'none',
-                  fontWeight: 500,
-                  fontSize: '0.875rem',
+                  fontWeight: themeTokens.typography.fontWeight.medium,
+                  fontSize: themeTokens.typography.fontSize.sm,
                   ...(location.pathname === item.path && {
-                    backgroundColor: '#ffffff',
-                    color: '#000000',
-                    '&:hover': {
-                      backgroundColor: '#f0f0f0',
-                    }
+                    ...commonStyles.buttonPrimary
                   }),
                   ...(location.pathname !== item.path && {
-                    borderColor: '#333333',
-                    color: '#ffffff',
-                    '&:hover': {
-                      borderColor: '#ffffff',
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    }
+                    ...commonStyles.buttonSecondary
                   })
                 }}
               >

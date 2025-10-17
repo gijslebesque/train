@@ -29,6 +29,7 @@ import {
   Favorite as HeartIcon,
   DirectionsRun as RunIcon
 } from '@mui/icons-material';
+import { commonStyles, themeTokens } from '../theme';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
@@ -128,7 +129,7 @@ const RecommendationsPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Container maxWidth="lg" sx={{ mt: 8, mb: 4 }}>
+      <Container maxWidth="lg" sx={commonStyles.container}>
         <Box
           display="flex"
           flexDirection="column"
@@ -137,7 +138,7 @@ const RecommendationsPage: React.FC = () => {
           minHeight="50vh"
           gap={3}
         >
-          <CircularProgress size={60} sx={{ color: '#ffffff' }} />
+          <CircularProgress size={60} sx={{ color: themeTokens.colors.text.primary }} />
           <Typography variant="h6" color="text.secondary" textAlign="center">
             🤖 Generating AI recommendations...
           </Typography>
@@ -148,19 +149,11 @@ const RecommendationsPage: React.FC = () => {
 
   if (error) {
     return (
-      <Container maxWidth="md" sx={{ mt: 8, mb: 4 }}>
+      <Container maxWidth="md" sx={commonStyles.container}>
         <Box textAlign="center">
           <Alert 
             severity="error" 
-            sx={{ 
-              mb: 3,
-              backgroundColor: '#1a1a1a',
-              border: '1px solid #ff4444',
-              color: '#ffffff',
-              '& .MuiAlert-icon': {
-                color: '#ff4444'
-              }
-            }}
+            sx={commonStyles.alertError}
           >
             ❌ {error}
           </Alert>
@@ -169,13 +162,7 @@ const RecommendationsPage: React.FC = () => {
             onClick={fetchRecommendations}
             startIcon={<RefreshIcon />}
             size="large"
-            sx={{
-              backgroundColor: '#ffffff',
-              color: '#000000',
-              '&:hover': {
-                backgroundColor: '#f0f0f0',
-              }
-            }}
+            sx={commonStyles.buttonPrimary}
           >
             Try Again
           </Button>
@@ -186,18 +173,11 @@ const RecommendationsPage: React.FC = () => {
 
   if (!recommendations) {
     return (
-      <Container maxWidth="md" sx={{ mt: 8, mb: 4 }}>
+      <Container maxWidth="md" sx={commonStyles.container}>
         <Box textAlign="center">
           <Alert 
             severity="info"
-            sx={{
-              backgroundColor: '#1a1a1a',
-              border: '1px solid #333333',
-              color: '#ffffff',
-              '& .MuiAlert-icon': {
-                color: '#2196f3'
-              }
-            }}
+            sx={commonStyles.alertInfo}
           >
             No recommendations available. Make sure you have activities and are connected to Strava.
           </Alert>
@@ -207,7 +187,7 @@ const RecommendationsPage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 8, mb: 4 }}>
+    <Container maxWidth="lg" sx={commonStyles.container}>
       {/* Header */}
       <Box
         display="flex"
@@ -215,8 +195,7 @@ const RecommendationsPage: React.FC = () => {
         alignItems="center"
         mb={6}
         pb={3}
-        borderBottom="1px solid"
-        borderColor="divider"
+        borderBottom={`1px solid ${themeTokens.colors.border.light}`}
       >
         <Typography variant="h4" component="h1" color="primary" fontWeight={700}>
           <PsychologyIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
@@ -226,21 +205,14 @@ const RecommendationsPage: React.FC = () => {
           variant="outlined"
           onClick={fetchRecommendations}
           startIcon={<RefreshIcon />}
-          sx={{
-            borderColor: '#333333',
-            color: '#ffffff',
-            '&:hover': {
-              borderColor: '#ffffff',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            }
-          }}
+          sx={commonStyles.buttonSecondary}
         >
           Refresh
         </Button>
       </Box>
 
       {/* Performance Summary */}
-      <Card sx={{ mb: 6, backgroundColor: '#111111', border: '1px solid #333333' }}>
+      <Card sx={{ ...commonStyles.card, mb: 6 }}>
         <CardContent sx={{ p: 4 }}>
           <Typography variant="h5" component="h2" gutterBottom color="primary" fontWeight={600} sx={{ mb: 3 }}>
             <TrendingUpIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
@@ -321,13 +293,7 @@ const RecommendationsPage: React.FC = () => {
                   key={type}
                   label={`${type}: ${count}`}
                   size="small"
-                  sx={{
-                    backgroundColor: '#333333',
-                    color: '#ffffff',
-                    '&:hover': {
-                      backgroundColor: '#444444',
-                    }
-                  }}
+                  sx={commonStyles.chipDefault}
                 />
               ))}
             </Stack>
@@ -368,13 +334,13 @@ const RecommendationsPage: React.FC = () => {
 
       {/* Weekly Schedule Table */}
       {recommendations.schedule && recommendations.schedule.workouts && (
-        <Card sx={{ mb: 6, backgroundColor: '#111111', border: '1px solid #333333' }}>
+        <Card sx={{ ...commonStyles.card, mb: 6 }}>
           <Box
             sx={{
-              backgroundColor: '#1a1a1a',
-              color: '#ffffff',
+              backgroundColor: themeTokens.colors.background.elevated,
+              color: themeTokens.colors.text.primary,
               p: 3,
-              borderBottom: '1px solid #333333'
+              borderBottom: `1px solid ${themeTokens.colors.border.light}`
             }}
           >
             <Typography variant="h5" component="h3" fontWeight={600}>
@@ -387,16 +353,16 @@ const RecommendationsPage: React.FC = () => {
             )}
           </Box>
           
-          <TableContainer sx={{ backgroundColor: '#111111' }}>
+          <TableContainer sx={{ backgroundColor: themeTokens.colors.background.paper }}>
             <Table sx={{ minWidth: 650 }} aria-label="weekly schedule table">
               <TableHead>
-                <TableRow sx={{ backgroundColor: '#1a1a1a' }}>
-                  <TableCell sx={{ color: '#ffffff', fontWeight: 600 }}>Day</TableCell>
-                  <TableCell sx={{ color: '#ffffff', fontWeight: 600 }}>Workout</TableCell>
-                  <TableCell sx={{ color: '#ffffff', fontWeight: 600 }}>Distance</TableCell>
-                  <TableCell sx={{ color: '#ffffff', fontWeight: 600 }}>Time</TableCell>
-                  <TableCell sx={{ color: '#ffffff', fontWeight: 600 }}>Pace</TableCell>
-                  <TableCell sx={{ color: '#ffffff', fontWeight: 600 }}>Notes</TableCell>
+                <TableRow sx={commonStyles.tableHeader}>
+                  <TableCell sx={commonStyles.tableHeader}>Day</TableCell>
+                  <TableCell sx={commonStyles.tableHeader}>Workout</TableCell>
+                  <TableCell sx={commonStyles.tableHeader}>Distance</TableCell>
+                  <TableCell sx={commonStyles.tableHeader}>Time</TableCell>
+                  <TableCell sx={commonStyles.tableHeader}>Pace</TableCell>
+                  <TableCell sx={commonStyles.tableHeader}>Notes</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -405,10 +371,9 @@ const RecommendationsPage: React.FC = () => {
                     key={index}
                     sx={{ 
                       '&:last-child td, &:last-child th': { border: 0 },
-                      backgroundColor: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? '#0a0a0a' : '#111111',
-                      '&:hover': {
-                        backgroundColor: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? '#151515' : '#1a1a1a',
-                      }
+                      ...(workout.workout === 'Rest' || workout.workout === 'Rest Day' 
+                        ? commonStyles.tableRowRest 
+                        : commonStyles.tableRow)
                     }}
                   >
                     <TableCell component="th" scope="row">
@@ -425,14 +390,11 @@ const RecommendationsPage: React.FC = () => {
                       <Chip 
                         label={workout.workout}
                         size="small"
-                        sx={{
-                          backgroundColor: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? '#333333' : '#ffffff',
-                          color: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? '#ffffff' : '#000000',
-                          border: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? '1px solid #555555' : 'none',
-                          '&:hover': {
-                            backgroundColor: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? '#444444' : '#f0f0f0',
-                          }
-                        }}
+                        sx={
+                          workout.workout === 'Rest' || workout.workout === 'Rest Day' 
+                            ? commonStyles.chipDefault
+                            : commonStyles.chipActive
+                        }
                       />
                     </TableCell>
                     <TableCell>
@@ -466,10 +428,9 @@ const RecommendationsPage: React.FC = () => {
       {/* Token Usage Info */}
       <Card
         sx={{
+          ...commonStyles.cardElevated,
           p: 3,
           textAlign: 'center',
-          backgroundColor: '#1a1a1a',
-          border: '1px solid #333333'
         }}
       >
         <Typography variant="body2" color="text.secondary">
