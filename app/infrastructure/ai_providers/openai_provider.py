@@ -51,14 +51,15 @@ class OpenAIProvider(AIRecommendationService):
             # Count input tokens
             input_tokens = self.count_tokens(prompt)
             
-            # Check token limits
-            max_tokens = request.max_tokens or 4096
-            if input_tokens > max_tokens:
-                raise AIProviderError(
-                    f"Input prompt exceeds token limit: {input_tokens} > {max_tokens}",
-                    provider="openai",
-                    error_code="token_limit_exceeded"
-                )
+            # Check token limits if max_tokens is provided
+            if request.max_tokens:
+                max_tokens = request.max_tokens
+                if input_tokens > max_tokens:
+                    raise AIProviderError(
+                        f"Input prompt exceeds token limit: {input_tokens} > {max_tokens}",
+                        provider="openai",
+                        error_code="token_limit_exceeded"
+                    )
             
             logger.info(f"Generating recommendations with OpenAI {self.model}. Input tokens: {input_tokens}")
             

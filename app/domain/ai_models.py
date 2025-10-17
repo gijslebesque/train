@@ -54,24 +54,40 @@ class RecommendationRequest:
     """Request for AI recommendations."""
     performance_summary: str
     performance_metrics: Dict[str, Any]
+    activities_data:Dict[str, Any]
     context: Optional[str] = None
     max_tokens: Optional[int] = None
     
     def to_prompt(self) -> str:
         """Convert request to AI prompt."""
         prompt = f"""
-        You are a professional triathlon and fitness coach. Based on this performance data:
-        {self.performance_summary}
-        
-        Please provide specific, actionable training recommendations for the next week. Focus on:
-        1. Areas for improvement
-        2. Specific training suggestions
-        3. Recovery recommendations
-        4. Performance goals
+### Role
+You are an advanced personal trainer and performance strategist for experienced athletes.  
+Your task is to create a scientifically balanced, and performance-optimized *weekly training schedule* based on the athlete's latest workout history.
+
+---
+
+### Analysis Goals
+
+1.⁠ ⁠Plan next-week workouts accordingly:
+   - Balance between endurance, strength, and recovery
+   - Increase challenge gradually where improvement is possible  
+   - Prioritize recovery when fatigue is detected  
+
+---
+
+### Output Requirements
+Provide the following each time:
+1.⁠ ⁠*7-Day Workout Schedule* (detailed daily plan)
+
+
+### Latest Activity Data
+{self.activities_data}
+
         """
         
         if self.context:
-            prompt += f"\n\nAdditional context: {self.context}"
+            prompt += f"\n\n### Additional Context\n{self.context}"
             
         return prompt.strip()
 
@@ -94,3 +110,20 @@ class RecommendationResult:
             "model_used": self.ai_response.model_used,
             "provider": self.ai_response.provider.value
         }
+
+
+# add workout schedule schema
+@dataclass
+class WorkoutSchedule:
+    """Workout schedule for a week."""
+    date: str
+    workout: str
+    distance: float
+    time: float
+    pace: float
+    notes: str
+
+    def to_json(self) -> str:
+        """Convert to JSON."""
+        return json.dumps(self.to_dict())
+

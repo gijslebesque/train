@@ -5,8 +5,7 @@ Service layer for AI recommendations.
 
 import logging
 from typing import Dict, Any, List
-
-from ..domain.ai_service import AIRecommendationService, AIProviderError
+from ..domain.ai_service import AIRecommendationService
 from ..domain.ai_models import RecommendationRequest, RecommendationResult
 from ..data_processor import calculate_performance_metrics, create_performance_summary
 
@@ -37,7 +36,7 @@ class RecommendationService:
         Args:
             activities_data: List of activity data from Strava
             context: Optional additional context for recommendations
-            
+            max_tokens: Optional maximum number of tokens for the request
         Returns:
             RecommendationResult with AI-generated suggestions
             
@@ -55,10 +54,10 @@ class RecommendationService:
         
         # Create recommendation request
         request = RecommendationRequest(
+            activities_data=activities_data,
             performance_summary=summary,
             performance_metrics=metrics,
             context=context,
-            max_tokens=4096
         )
         
         logger.info(f"Generating recommendations for {len(activities_data)} activities")
