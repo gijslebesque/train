@@ -1,4 +1,4 @@
-import { SxProps, Theme } from '@mui/material/styles';
+import type { SxProps, Theme } from '@mui/material/styles';
 import { themeTokens } from './theme';
 
 // Common styling patterns using design tokens

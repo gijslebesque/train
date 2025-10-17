@@ -70,7 +70,7 @@ export const theme = createTheme({
   spacing: (factor: number) => `${factor * 0.25}rem`, // 4px base unit
   
   shape: {
-    borderRadius: tokens.borderRadius.md,
+    borderRadius: Number(tokens.borderRadius.md),
   },
   
   components: {

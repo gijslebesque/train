@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import {
   Container,
   Typography,
@@ -11,7 +11,6 @@ import {
   CardContent,
   Grid,
   Chip,
-  Paper,
   Stack,
   Table,
   TableBody,
@@ -89,10 +88,10 @@ const RecommendationsPage: React.FC = () => {
       } else {
         setError(data.message || 'Failed to fetch recommendations');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching recommendations:', error);
-      if (error.response?.data?.message) {
-        setError(error.response.data.message);
+      if (error instanceof AxiosError && error.response?.data?.message as string) {
+        setError((error.response?.data?.message as string));
       } else {
         setError('Error connecting to server');
       }

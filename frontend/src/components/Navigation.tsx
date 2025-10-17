@@ -13,7 +13,7 @@ import {
   DirectionsRun as ActivitiesIcon,
   Psychology as RecommendationsIcon
 } from '@mui/icons-material';
-import { commonStyles, themeTokens } from '../theme';
+import { themeTokens } from '../theme';
 
 const Navigation: React.FC = () => {
   const location = useLocation();
@@ -31,7 +31,6 @@ const Navigation: React.FC = () => {
         zIndex: (theme) => theme.zIndex.drawer + 1,
         backgroundColor: themeTokens.colors.background.default,
         borderBottom: `1px solid ${themeTokens.colors.border.light}`,
-        boxShadow: themeTokens.shadows.none
       }}
     >
       <Container maxWidth="lg">
@@ -67,11 +66,14 @@ const Navigation: React.FC = () => {
                   textTransform: 'none',
                   fontWeight: themeTokens.typography.fontWeight.medium,
                   fontSize: themeTokens.typography.fontSize.sm,
-                  ...(location.pathname === item.path && {
-                    ...commonStyles.buttonPrimary
-                  }),
                   ...(location.pathname !== item.path && {
-                    ...commonStyles.buttonSecondary
+                    backgroundColor: 'transparent',
+                    color: themeTokens.colors.text.secondary,
+                    borderColor: themeTokens.colors.border.light,
+                    '&:hover': {
+                      backgroundColor: themeTokens.colors.background.paper,
+                      borderColor: themeTokens.colors.text.secondary
+                    }
                   })
                 }}
               >

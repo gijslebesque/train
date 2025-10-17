@@ -43,6 +43,7 @@ interface TokenStatus {
 
 const StravaLogin: React.FC = () => {
   const navigate = useNavigate();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setAuthUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [tokenStatus, setTokenStatus] = useState<TokenStatus | null>(null);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import {
   Container,
   Typography,
@@ -105,11 +105,12 @@ const ActivitiesPage: React.FC = () => {
       } else {
         setError(data.message || 'Failed to fetch activities');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching activities:', error);
-      if (error.response?.data?.message) {
-        setError(error.response.data.message);
-      } else {
+      if (error instanceof AxiosError && error.response?.data?.message as string) {
+        setError((error.response?.data?.message as string));
+      }
+      else {
         setError('Error connecting to server');
       }
     } finally {
