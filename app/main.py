@@ -119,3 +119,17 @@ def get_cache_stats():
     """Get cache statistics."""
     result = container.recommendation_controller.get_cache_stats()
     return create_response_with_status(result)
+
+
+@app.delete("/activities/cache")
+def clear_activities_cache():
+    """Clear the activities cache."""
+    result = container.activity_controller.clear_activities_cache()
+    return create_response_with_status(result)
+
+
+@app.get("/activities/cache/stats")
+def get_activities_cache_stats():
+    """Get activities cache statistics."""
+    result = container.activity_controller.get_cache_stats()
+    return create_response_with_status(result)

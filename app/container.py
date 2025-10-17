@@ -54,7 +54,7 @@ class Container:
 
         # Initialize controllers
         self._auth_controller = AuthController(self._token_service)
-        self._activity_controller = ActivityController(self._token_service)
+        self._activity_controller = ActivityController(self._token_service, self._cache_service)
         self._recommendation_controller = RecommendationController(
             self._token_service,
             self._activity_controller,
