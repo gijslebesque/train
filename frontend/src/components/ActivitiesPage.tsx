@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios, { AxiosError } from 'axios';
+import React from 'react';
 import {
   Container,
   Typography,
@@ -31,91 +30,39 @@ import {
   Terrain as ElevationIcon,
   EmojiEvents as AchievementIcon
 } from '@mui/icons-material';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-
-interface Activity {
-  id: number;
-  name: string;
-  type: string;
-  sport_type: string;
-  start_date: string;
-  start_date_local: string;
-  distance: number;
-  distance_km: number;
-  moving_time: number;
-  moving_time_minutes: number;
-  average_speed: number;
-  average_speed_kmh: number;
-  max_speed: number;
-  max_speed_kmh: number;
-  total_elevation_gain: number;
-  average_heartrate?: number;
-  max_heartrate?: number;
-  pace_per_km?: number;
-  achievement_count: number;
-  pr_count: number;
-}
-
-interface ActivitiesResponse {
-  success: boolean;
-  message: string;
-  data: {
-    total_activities: number;
-    performance_activities: number;
-    activities: Activity[];
-  };
-}
+import { useActivities, useRefreshActivities, getErrorMessage } from '../hooks/api';
 
 const ActivitiesPage: React.FC = () => {
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [stats, setStats] = useState({
-    totalActivities: 0,
-    performanceActivities: 0,
-    totalDistance: 0,
-    totalTime: 0,
-    avgSpeed: 0
-  });
+  const { data: activitiesData, isLoading, error, refetch } = useActivities();
+  const refreshActivities = useRefreshActivities();
 
-  useEffect(() => {
-    fetchActivities();
-  }, []);
-
-  const fetchActivities = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const response = await axios.get(`${API_BASE_URL}/activities`);
-      const data: ActivitiesResponse = response.data;
-      
-      if (data.success) {
-        setActivities(data.data.activities);
-        setStats({
-          totalActivities: data.data.total_activities,
-          performanceActivities: data.data.performance_activities,
-          totalDistance: data.data.activities.reduce((sum, activity) => sum + activity.distance_km, 0),
-          totalTime: data.data.activities.reduce((sum, activity) => sum + activity.moving_time_minutes, 0),
-          avgSpeed: data.data.activities.length > 0 
-            ? data.data.activities.reduce((sum, activity) => sum + (activity.average_speed_kmh || 0), 0) / data.data.activities.length
-            : 0
-        });
-      } else {
-        setError(data.message || 'Failed to fetch activities');
-      }
-    } catch (error: unknown) {
-      console.error('Error fetching activities:', error);
-      if (error instanceof AxiosError && error.response?.data?.message as string) {
-        setError((error.response?.data?.message as string));
-      }
-      else {
-        setError('Error connecting to server');
-      }
-    } finally {
-      setIsLoading(false);
+  // Extract data from the response
+  const activities = activitiesData?.data?.activities || [];
+  const stats = React.useMemo(() => {
+    if (!activitiesData?.data) {
+      return {
+        totalActivities: 0,
+        performanceActivities: 0,
+        totalDistance: 0,
+        totalTime: 0,
+        avgSpeed: 0
+      };
     }
+
+    const { total_activities, performance_activities, activities: activitiesList } = activitiesData.data;
+    return {
+      totalActivities: total_activities,
+      performanceActivities: performance_activities,
+      totalDistance: activitiesList.reduce((sum, activity) => sum + activity.distance_km, 0),
+      totalTime: activitiesList.reduce((sum, activity) => sum + activity.moving_time_minutes, 0),
+      avgSpeed: activitiesList.length > 0 
+        ? activitiesList.reduce((sum, activity) => sum + (activity.average_speed_kmh || 0), 0) / activitiesList.length
+        : 0
+    };
+  }, [activitiesData]);
+
+  const handleRefresh = () => {
+    refreshActivities.mutate();
   };
 
   const formatDate = (dateString: string) => {
@@ -167,11 +114,11 @@ const ActivitiesPage: React.FC = () => {
     return (
       <Container maxWidth="md" sx={{ mt: '80px', mb: 4 }}>
         <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+          {getErrorMessage(error)}
         </Alert>
         <Button
           variant="contained"
-          onClick={fetchActivities}
+          onClick={() => refetch()}
           startIcon={<RefreshIcon />}
         >
           Try Again
@@ -190,10 +137,11 @@ const ActivitiesPage: React.FC = () => {
         <Button
           variant="contained"
           startIcon={<RefreshIcon />}
-          onClick={fetchActivities}
+          onClick={handleRefresh}
           color="success"
+          disabled={refreshActivities.isPending}
         >
-          Refresh
+          {refreshActivities.isPending ? 'Refreshing...' : 'Refresh'}
         </Button>
       </Box>
 

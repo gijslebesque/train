@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import {
   Container,
   Typography,
@@ -20,74 +19,20 @@ import {
   Psychology as RecommendationsIcon
 } from '@mui/icons-material';
 import { commonStyles, themeTokens } from '../theme';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-
-interface AuthResponse {
-  success: boolean;
-  message: string;
-  data: {
-    auth_url: string;
-  };
-}
-
-interface TokenStatus {
-  success: boolean;
-  data: {
-    status: string;
-    is_expired?: boolean;
-    time_until_expiry?: number;
-    athlete_id?: number;
-  };
-}
+import { useTokenStatus, useAuthUrl } from '../hooks/api';
 
 const StravaLogin: React.FC = () => {
   const navigate = useNavigate();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, setAuthUrl] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [tokenStatus, setTokenStatus] = useState<TokenStatus | null>(null);
+  const { data: tokenStatus } = useTokenStatus();
+  const authUrlMutation = useAuthUrl();
 
-  useEffect(() => {
-    checkTokenStatus();
-  }, []);
-
-  const checkTokenStatus = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/token_status`);
-      setTokenStatus(response.data);
-    } catch (error) {
-      console.error('Error checking token status:', error);
-    }
-  };
-
-  const handleLogin = async () => {
-    setIsLoading(true);
-    try {
-        console.log('handleLogin', API_BASE_URL);
-      const response = await axios.get(`${API_BASE_URL}/auth/strava`);
-      const data: AuthResponse = response.data;
-      console.log(data);
-      
-      if (data.success && data.data.auth_url) {
-        setAuthUrl(data.data.auth_url);
-        // Redirect to Strava authorization
-        window.location.href = data.data.auth_url;
-      } else {
-        alert('Failed to get authorization URL');
-      }
-    } catch (error) {
-      console.error('Error getting auth URL:', error);
-      alert('Error connecting to server');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleLogin = () => {
+    authUrlMutation.mutate();
   };
 
   const handleLogout = async () => {
     try {
       // Clear tokens (you might want to add a logout endpoint to your API)
-      setTokenStatus(null);
       alert('Logged out successfully');
     } catch (error) {
       console.error('Error logging out:', error);
@@ -211,7 +156,7 @@ const StravaLogin: React.FC = () => {
                 size="large"
                 startIcon={<StravaIcon />}
                 onClick={handleLogin}
-                disabled={isLoading}
+                disabled={authUrlMutation.isPending}
                 fullWidth
                 sx={{ 
                   py: 2,
@@ -222,7 +167,7 @@ const StravaLogin: React.FC = () => {
                   }
                 }}
               >
-                {isLoading ? (
+                {authUrlMutation.isPending ? (
                   <Box display="flex" alignItems="center" gap={1}>
                     <CircularProgress size={20} color="inherit" />
                     Connecting...

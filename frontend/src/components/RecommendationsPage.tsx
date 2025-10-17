@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios, { AxiosError } from 'axios';
+import React from 'react';
 import {
   Container,
   Typography,
@@ -29,80 +28,18 @@ import {
   DirectionsRun as RunIcon
 } from '@mui/icons-material';
 import { commonStyles, themeTokens } from '../theme';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-
-interface WorkoutDay {
-  date: string;
-  workout: string;
-  distance?: string | number;
-  time?: string;
-  pace?: string;
-  notes: string;
-}
-
-interface ScheduleData {
-  week_of?: string;
-  workouts?: WorkoutDay[];
-}
-
-interface RecommendationResponse {
-  success: boolean;
-  message: string;
-  data: {
-    summary: string;
-    recommendations: string;
-    schedule?: ScheduleData;
-    metrics: {
-      total_distance_km: number;
-      total_time_minutes: number;
-      avg_speed_kmh: number;
-      avg_heartrate: number;
-      total_elevation: number;
-      activity_count: number;
-      activity_types: Record<string, number>;
-    };
-    token_usage: {
-      input_tokens: number;
-      output_tokens: number;
-      total_tokens: number;
-    };
-  };
-}
+import { useRecommendations, useRefreshRecommendations, getErrorMessage } from '../hooks/api';
 
 const RecommendationsPage: React.FC = () => {
-  const [recommendations, setRecommendations] = useState<RecommendationResponse['data'] | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { data: recommendationsData, isLoading, error, refetch } = useRecommendations();
+  const refreshRecommendations = useRefreshRecommendations();
 
-  const fetchRecommendations = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const response = await axios.get(`${API_BASE_URL}/recommendations`);
-      const data: RecommendationResponse = response.data;
-      
-      if (data.success) {
-        setRecommendations(data.data);
-      } else {
-        setError(data.message || 'Failed to fetch recommendations');
-      }
-    } catch (error: unknown) {
-      console.error('Error fetching recommendations:', error);
-      if (error instanceof AxiosError && error.response?.data?.message as string) {
-        setError((error.response?.data?.message as string));
-      } else {
-        setError('Error connecting to server');
-      }
-    } finally {
-      setIsLoading(false);
-    }
+  // Extract data from the response
+  const recommendations = recommendationsData?.data || null;
+
+  const handleRefresh = () => {
+    refreshRecommendations.mutate();
   };
-
-  useEffect(() => {
-    fetchRecommendations();
-  }, []);
 
   console.log('schedule',recommendations?.schedule)
 
@@ -154,11 +91,11 @@ const RecommendationsPage: React.FC = () => {
             severity="error" 
             sx={commonStyles.alertError}
           >
-            ❌ {error}
+            ❌ {getErrorMessage(error)}
           </Alert>
           <Button
             variant="contained"
-            onClick={fetchRecommendations}
+            onClick={() => refetch()}
             startIcon={<RefreshIcon />}
             size="large"
             sx={commonStyles.buttonPrimary}
@@ -202,11 +139,12 @@ const RecommendationsPage: React.FC = () => {
         </Typography>
         <Button
           variant="outlined"
-          onClick={fetchRecommendations}
+          onClick={handleRefresh}
           startIcon={<RefreshIcon />}
           sx={commonStyles.buttonSecondary}
+          disabled={refreshRecommendations.isPending}
         >
-          Refresh
+          {refreshRecommendations.isPending ? 'Refreshing...' : 'Refresh'}
         </Button>
       </Box>
 
