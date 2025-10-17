@@ -61,7 +61,7 @@ const StravaCallback: React.FC = () => {
   }, []);
 
   return (
-    <Container maxWidth="md" sx={commonStyles.container}>
+    <Container maxWidth="md" sx={commonStyles.containerWithNav}>
       <Card sx={commonStyles.card}>
         <CardContent sx={{ textAlign: 'center', p: 6 }}>
           {isLoading ? (

@@ -51,6 +51,11 @@ export const commonStyles = {
     marginBottom: themeTokens.spacing.xl,
   } as SxProps<Theme>,
   
+  containerWithNav: {
+    marginTop: '80px', // Account for fixed AppBar height
+    marginBottom: themeTokens.spacing.xl,
+  } as SxProps<Theme>,
+  
   section: {
     marginBottom: themeTokens.spacing.xl,
   } as SxProps<Theme>,

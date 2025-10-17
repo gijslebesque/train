@@ -129,7 +129,7 @@ const RecommendationsPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Container maxWidth="lg" sx={commonStyles.container}>
+      <Container maxWidth="lg" sx={commonStyles.containerWithNav}>
         <Box
           display="flex"
           flexDirection="column"
@@ -149,7 +149,7 @@ const RecommendationsPage: React.FC = () => {
 
   if (error) {
     return (
-      <Container maxWidth="md" sx={commonStyles.container}>
+      <Container maxWidth="md" sx={commonStyles.containerWithNav}>
         <Box textAlign="center">
           <Alert 
             severity="error" 
@@ -173,7 +173,7 @@ const RecommendationsPage: React.FC = () => {
 
   if (!recommendations) {
     return (
-      <Container maxWidth="md" sx={commonStyles.container}>
+      <Container maxWidth="md" sx={commonStyles.containerWithNav}>
         <Box textAlign="center">
           <Alert 
             severity="info"
@@ -187,7 +187,7 @@ const RecommendationsPage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={commonStyles.container}>
+    <Container maxWidth="lg" sx={commonStyles.containerWithNav}>
       {/* Header */}
       <Box
         display="flex"

@@ -149,7 +149,7 @@ const ActivitiesPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Container maxWidth="lg" sx={{ mt: 8, mb: 4 }}>
+      <Container maxWidth="lg" sx={{ mt: '80px', mb: 4 }}>
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
           <Stack alignItems="center" spacing={2}>
             <CircularProgress size={40} />
@@ -164,7 +164,7 @@ const ActivitiesPage: React.FC = () => {
 
   if (error) {
     return (
-      <Container maxWidth="md" sx={{ mt: 8, mb: 4 }}>
+      <Container maxWidth="md" sx={{ mt: '80px', mb: 4 }}>
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
@@ -180,7 +180,7 @@ const ActivitiesPage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 8, mb: 4 }}>
+    <Container maxWidth="lg" sx={{ mt: '80px', mb: 4 }}>
       {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
         <Typography variant="h4" component="h1" color="primary">

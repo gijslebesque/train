@@ -94,7 +94,7 @@ const StravaLogin: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={commonStyles.container}>
+    <Container maxWidth="md" sx={commonStyles.containerWithNav}>
       <Card sx={{ ...commonStyles.card, p: 6 }}>
         <Box textAlign="center" mb={6}>
           <Box sx={{ 
