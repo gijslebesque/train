@@ -60,7 +60,7 @@ class Container:
         """Create AI service based on provider configuration."""
         try:
             if provider == "openai":
-                model = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+                model = os.getenv("OPENAI_MODEL", "gpt-5-mini")
                 return OpenAIProvider(model=model)
             elif provider == "ollama":
                 base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")

@@ -61,95 +61,47 @@ class RecommendationRequest:
     
     def to_prompt(self) -> str:
         """Convert request to AI prompt."""
-        json_example = '''{
-  "week_of": "2025-10-17",
-  "workouts": [
-    {
-      "date": "2025-10-17",
-      "workout": "Swim",
-      "distance": 2500,
-      "time": "40 minutes",
-      "pace": "16 min/100m",
-      "notes": "Focus on technique and breathing"
-    },
-    {
-      "date": "2025-10-18",
-      "workout": "Run",
-      "distance": 6.5,
-      "time": "30 minutes",
-      "pace": "4:37 min/km",
-      "notes": "Interval training: 5x800m repeats"
-    },
-    {
-      "date": "2025-10-19",
-      "workout": "Ride",
-      "distance": 50,
-      "time": "90 minutes",
-      "pace": "33.3 km/h",
-      "notes": "Hill repeats to build strength"
-    },
-    {
-      "date": "2025-10-20",
-      "workout": "Swim",
-      "distance": 3000,
-      "time": "50 minutes",
-      "pace": "16:40 min/100m",
-      "notes": "Endurance swim with focus on form"
-    },
-    {
-      "date": "2025-10-21",
-      "workout": "Run",
-      "distance": 7,
-      "time": "40 minutes",
-      "pace": "5:42 min/km",
-      "notes": "Steady-state run to improve aerobic capacity"
-    },
-    {
-      "date": "2025-10-22",
-      "workout": "Ride",
-      "distance": 70,
-      "time": "120 minutes",
-      "pace": "35 km/h",
-      "notes": "Long ride to build endurance"
-    },
-    {
-      "date": "2025-10-23",
-      "workout": "Rest",
-      "notes": "Active recovery day, focus on stretching and mobility"
-    }
-  ]
-}'''
-        
         prompt = f"""
 ### Role
 You are an advanced personal trainer and performance strategist for experienced athletes.  
 Your task is to create a scientifically balanced, and performance-optimized *weekly training schedule* based on the athlete's latest workout history.
 
----
-
 ### Analysis Goals
-
-1.⁠ ⁠Plan next-week workouts accordingly:
-   - Balance between endurance, strength, and recovery
-   - Increase challenge gradually where improvement is possible  
-   - Prioritize recovery when fatigue is detected  
-
----
+Plan next-week workouts accordingly:
+- Balance between endurance, strength, and recovery
+- Increase challenge gradually where improvement is possible  
+- Prioritize recovery when fatigue is detected  
 
 ### Output Requirements
-You must return your response in the following JSON format (this is just an example structure):
+Return ONLY a JSON object matching this schema:
 
 ```json
-{json_example}
+{{
+  "week_of": "YYYY-MM-DD",
+  "workouts": [
+    {{
+      "date": "YYYY-MM-DD",
+      "workout": "string",
+      "distance": number,
+      "time": "string",
+      "pace": "string",
+      "notes": "string"
+    }}
+  ]
+}}
 ```
 
-IMPORTANT: 
-- Return ONLY a JSON object with the same structure as the example above
-- Create a realistic 7-day training schedule based on the athlete's data
-- Use appropriate dates for the upcoming week
-- Include varied workout types (Run, Swim, Ride, Rest)
-- Set realistic distances, times, and paces based on the athlete's performance
-- No additional text or markdown formatting
+Schema fields:
+- week_of: Start date of the training week (YYYY-MM-DD format)
+- workouts: Array of 7 workout objects (one per day)
+- date: Workout date (YYYY-MM-DD format)
+- workout: Type of workout (Run, Swim, Ride, Rest, etc.)
+- distance: Distance in appropriate units (km for runs/rides, meters for swims)
+- time: Duration as string (e.g., "40 minutes", "1.5 hours")
+- pace: Pace/speed as string (e.g., "5:30 min/km", "16 min/100m", "25 km/h")
+- notes: Training focus and instructions
+
+Create a realistic 7-day training schedule based on the athlete's data. Use appropriate dates for the upcoming week and include varied workout types.
 
 ### Latest Activity Data
 {self.activities_data}
