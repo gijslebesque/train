@@ -112,6 +112,20 @@ const RecommendationsPage: React.FC = () => {
     return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
   };
 
+  const getWeekday = (dateString: string) => {
+    const date = new Date(dateString);
+    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return weekdays[date.getDay()];
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
   if (isLoading) {
     return (
       <Container maxWidth="lg" sx={{ mt: 8, mb: 4 }}>
@@ -337,7 +351,7 @@ const RecommendationsPage: React.FC = () => {
             <Table sx={{ minWidth: 650 }} aria-label="weekly schedule table">
               <TableHead>
                 <TableRow sx={{ backgroundColor: 'grey.100' }}>
-                  <TableCell><strong>Date</strong></TableCell>
+                  <TableCell><strong>Day</strong></TableCell>
                   <TableCell><strong>Workout</strong></TableCell>
                   <TableCell><strong>Distance</strong></TableCell>
                   <TableCell><strong>Time</strong></TableCell>
@@ -355,9 +369,14 @@ const RecommendationsPage: React.FC = () => {
                     }}
                   >
                     <TableCell component="th" scope="row">
-                      <Typography variant="subtitle2" fontWeight="bold">
-                        {workout.date}
-                      </Typography>
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight="bold" color="primary">
+                          {getWeekday(workout.date)}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {formatDate(workout.date)}
+                        </Typography>
+                      </Box>
                     </TableCell>
                     <TableCell>
                       <Chip 
