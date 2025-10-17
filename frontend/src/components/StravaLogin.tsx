@@ -112,7 +112,7 @@ const StravaLogin: React.FC = () => {
             <StravaIcon sx={{ fontSize: 60, color: themeTokens.colors.secondary[500] }} />
           </Box>
           <Typography variant="h3" component="h1" gutterBottom color="primary" fontWeight={700}>
-            SPORTY
+            TRAIN
           </Typography>
           <Typography variant="h5" color="text.secondary" sx={{ maxWidth: 500, mx: 'auto' }}>
             AI-Powered Training Recommendations

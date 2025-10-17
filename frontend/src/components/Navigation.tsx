@@ -47,7 +47,7 @@ const Navigation: React.FC = () => {
               letterSpacing: '-0.02em'
             }}
           >
-            SPORTY
+            TRAIN
           </Typography>
           
           <Box sx={{ display: 'flex', gap: themeTokens.spacing.sm }}>
