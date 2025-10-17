@@ -6,6 +6,7 @@ Domain models for AI recommendation services.
 from dataclasses import dataclass
 from typing import Dict, Any, List, Optional
 from enum import Enum
+import json
 
 
 class AIProvider(Enum):
@@ -79,6 +80,13 @@ Your task is to create a scientifically balanced, and performance-optimized *wee
 ### Output Requirements
 Provide the following each time:
 1.⁠ ⁠*7-Day Workout Schedule* (detailed daily plan)
+2. The schedule should be in JSON format with the following fields:
+   - date: The date of the workout
+   - workout: The workout type
+   - distance: The distance of the workout
+   - time: The time of the workout
+   - pace: The pace of the workout
+   - notes: Any notes about the workout
 
 
 ### Latest Activity Data
@@ -99,10 +107,11 @@ class RecommendationResult:
     performance_summary: str
     performance_metrics: Dict[str, Any]
     ai_response: AIResponse
+    parsed_schedule: Optional[Dict[str, Any]] = None
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {
+        result = {
             "recommendations": self.recommendations,
             "summary": self.performance_summary,
             "metrics": self.performance_metrics,
@@ -110,6 +119,12 @@ class RecommendationResult:
             "model_used": self.ai_response.model_used,
             "provider": self.ai_response.provider.value
         }
+        
+        # Add parsed schedule if available
+        if self.parsed_schedule:
+            result["schedule"] = self.parsed_schedule
+            
+        return result
 
 
 # add workout schedule schema

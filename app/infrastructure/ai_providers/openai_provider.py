@@ -5,6 +5,7 @@ OpenAI implementation of AI recommendation service.
 
 import os
 import logging
+import json
 from typing import Dict, Any
 from openai import OpenAI
 import tiktoken
@@ -74,6 +75,35 @@ class OpenAIProvider(AIRecommendationService):
             response_content = completion.choices[0].message.content
             output_tokens = self.count_tokens(response_content)
             
+            # Try to extract and parse JSON schedule from response
+            parsed_schedule = None
+            try:
+                # Look for JSON block in the response
+                json_start = response_content.find('```json')
+                if json_start != -1:
+                    json_start = response_content.find('{', json_start)
+                    json_end = response_content.find('```', json_start)
+                    if json_end == -1:
+                        json_end = response_content.rfind('}') + 1
+                    else:
+                        json_end = response_content.rfind('}', json_start, json_end) + 1
+                    
+                    if json_start != -1 and json_end > json_start:
+                        json_content = response_content[json_start:json_end]
+                        parsed_schedule = json.loads(json_content)
+                        logger.info("Successfully parsed JSON schedule from AI response")
+                else:
+                    # Try to find JSON without markdown wrapper
+                    json_start = response_content.find('{')
+                    json_end = response_content.rfind('}') + 1
+                    if json_start != -1 and json_end > json_start:
+                        json_content = response_content[json_start:json_end]
+                        parsed_schedule = json.loads(json_content)
+                        logger.info("Successfully parsed JSON schedule from AI response")
+            except json.JSONDecodeError as e:
+                logger.warning(f"Failed to parse JSON schedule: {str(e)}")
+                parsed_schedule = None
+            
             # Create token usage
             token_usage = TokenUsage(
                 input_tokens=input_tokens,
@@ -88,13 +118,16 @@ class OpenAIProvider(AIRecommendationService):
                 model_used=self.model,
                 provider=AIProvider.OPENAI
             )
+
+            print(f"Parsed schedule: {parsed_schedule}")
             
-            # Create result
+            # Create result with parsed schedule
             result = RecommendationResult(
                 recommendations=response_content,
                 performance_summary=request.performance_summary,
                 performance_metrics=request.performance_metrics,
-                ai_response=ai_response
+                ai_response=ai_response,
+                parsed_schedule=parsed_schedule
             )
             
             logger.info(f"OpenAI recommendations generated successfully. Total tokens: {token_usage.total_tokens}")
