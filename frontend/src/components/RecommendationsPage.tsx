@@ -13,6 +13,12 @@ import {
   Chip,
   Paper,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -26,12 +32,27 @@ import {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
+interface WorkoutDay {
+  date: string;
+  workout: string;
+  distance?: string | number;
+  time?: string;
+  pace?: string;
+  notes: string;
+}
+
+interface ScheduleData {
+  week_of?: string;
+  workouts?: WorkoutDay[];
+}
+
 interface RecommendationResponse {
   success: boolean;
   message: string;
   data: {
     summary: string;
-    recommendations:string;
+    recommendations: string;
+    schedule?: ScheduleData;
     metrics: {
       total_distance_km: number;
       total_time_minutes: number;
@@ -83,7 +104,7 @@ const RecommendationsPage: React.FC = () => {
     fetchRecommendations();
   }, []);
 
-  console.log(recommendations?.recommendations)
+  console.log('schedule',recommendations?.schedule)
 
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -260,7 +281,7 @@ const RecommendationsPage: React.FC = () => {
       </Card>
 
       {/* AI Recommendations */}
-      <Card sx={{ mb: 4, boxShadow: 3 }}>
+      {/* <Card sx={{ mb: 4, boxShadow: 3 }}>
         <Box
           sx={{
             backgroundColor: 'primary.light',
@@ -288,7 +309,91 @@ const RecommendationsPage: React.FC = () => {
             {recommendations.recommendations}
           </Typography>
         </CardContent>
-      </Card>
+      </Card> */}
+
+      {/* Weekly Schedule Table */}
+      {recommendations.schedule && recommendations.schedule.workouts && (
+        <Card sx={{ mb: 4, boxShadow: 3 }}>
+          <Box
+            sx={{
+              backgroundColor: 'success.light',
+              color: 'success.contrastText',
+              p: 2,
+              borderBottom: '1px solid',
+              borderColor: 'divider'
+            }}
+          >
+            <Typography variant="h5" component="h3" fontWeight="bold">
+              📅 Weekly Training Schedule
+            </Typography>
+            {recommendations.schedule.week_of && (
+              <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
+                Week of: {recommendations.schedule.week_of}
+              </Typography>
+            )}
+          </Box>
+          
+          <TableContainer component={Paper} elevation={0}>
+            <Table sx={{ minWidth: 650 }} aria-label="weekly schedule table">
+              <TableHead>
+                <TableRow sx={{ backgroundColor: 'grey.100' }}>
+                  <TableCell><strong>Date</strong></TableCell>
+                  <TableCell><strong>Workout</strong></TableCell>
+                  <TableCell><strong>Distance</strong></TableCell>
+                  <TableCell><strong>Time</strong></TableCell>
+                  <TableCell><strong>Pace</strong></TableCell>
+                  <TableCell><strong>Notes</strong></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {recommendations.schedule.workouts.map((workout, index) => (
+                  <TableRow 
+                    key={index}
+                    sx={{ 
+                      '&:last-child td, &:last-child th': { border: 0 },
+                      backgroundColor: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? 'grey.50' : 'white'
+                    }}
+                  >
+                    <TableCell component="th" scope="row">
+                      <Typography variant="subtitle2" fontWeight="bold">
+                        {workout.date}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={workout.workout}
+                        color={workout.workout === 'Rest' || workout.workout === 'Rest Day' ? 'default' : 'primary'}
+                        size="small"
+                        variant={workout.workout === 'Rest' || workout.workout === 'Rest Day' ? 'outlined' : 'filled'}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {workout.distance ? `${workout.distance}${typeof workout.distance === 'number' ? ' km' : ''}` : '-'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {workout.time || '-'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">
+                        {workout.pace || '-'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" color="text.secondary">
+                        {workout.notes}
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Card>
+      )}
 
       {/* Token Usage Info */}
       <Paper
