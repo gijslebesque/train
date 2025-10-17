@@ -5,6 +5,8 @@ Activity controller for Strava activity operations.
 
 import os
 import requests
+import time
+from datetime import datetime, timedelta
 from typing import Dict, Any
 from ..controllers.base_controller import BaseController
 from ..services.token_service import TokenService
@@ -20,16 +22,23 @@ class ActivityController(BaseController):
         self.strava_base = "https://www.strava.com/api/v3"
     
     def get_activities(self) -> Dict[str, Any]:
-        """Fetch recent Strava activities."""
+        """Fetch Strava activities from the last 30 days."""
         access_token = self.token_service.get_access_token()
         if not access_token:
             return self.error_response("Not authenticated with Strava", "not_authenticated")
         
         try:
+            # Calculate epoch timestamp for 30 days ago
+            thirty_days_ago = datetime.now() - timedelta(days=30)
+            after_timestamp = int(thirty_days_ago.timestamp())
+            
             response = requests.get(
                 f"{self.strava_base}/athlete/activities",
                 headers={"Authorization": f"Bearer {access_token}"},
-                params={"per_page": 50},
+                params={
+                    "after": after_timestamp,
+                    "per_page": 200  # Get more activities to ensure we capture all from last 30 days
+                },
                 timeout=10
             )
             
