@@ -31,7 +31,7 @@ interface RecommendationResponse {
   message: string;
   data: {
     summary: string;
-    suggestions: string;
+    recommendations:string;
     metrics: {
       total_distance_km: number;
       total_time_minutes: number;
@@ -82,6 +82,8 @@ const RecommendationsPage: React.FC = () => {
   useEffect(() => {
     fetchRecommendations();
   }, []);
+
+  console.log(recommendations?.recommendations)
 
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -283,7 +285,7 @@ const RecommendationsPage: React.FC = () => {
               fontSize: '1.1rem'
             }}
           >
-            {recommendations.suggestions}
+            {recommendations.recommendations}
           </Typography>
         </CardContent>
       </Card>
