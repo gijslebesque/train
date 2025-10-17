@@ -93,12 +93,12 @@ Return ONLY a JSON object matching this schema:
 
 Schema fields:
 - week_of: Start date of the training week (YYYY-MM-DD format)
-- workouts: Array of 7 workout objects (one per day)
+- workouts: Array of 7 workout objects
 - date: Workout date (YYYY-MM-DD format)
-- workout: Type of workout (Run, Swim, Ride, Rest, etc.)
+- workout: Type of workout (Run, Swim, Ride, Strength, Rest, etc.)
 - distance: Distance in appropriate units (km for runs/rides, meters for swims)
 - time: Duration as string (e.g., "40 minutes", "1.5 hours")
-- pace: Pace/speed as string (e.g., "5:30 min/km", "16 min/100m", "25 km/h")
+- pace: Pace/speed as string (e.g., "5:30 min/km", "1:35 min/100m", "25 km/h")
 - notes: Training focus and instructions
 
 Create a realistic 7-day training schedule based on the athlete's data. Use appropriate dates for the upcoming week and include varied workout types.

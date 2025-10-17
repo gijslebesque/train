@@ -20,8 +20,13 @@ def extract_performance_stats(activities: List[Dict[str, Any]]) -> List[Dict[str
     performance_stats = []
     
     for activity in activities:
-        # Only include activities with performance data
-        if activity.get("distance") and activity.get("moving_time"):
+        # Include activities that have either distance+time OR just time (for strength training)
+        has_distance_time = activity.get("distance") and activity.get("moving_time")
+        has_time_only = activity.get("moving_time") and not activity.get("distance")
+        
+        if has_distance_time or has_time_only:
+            sport_type = activity.get("sport_type", "").lower()
+            
             stats = {
                 "id": activity.get("id"),
                 "name": activity.get("name"),
@@ -31,7 +36,7 @@ def extract_performance_stats(activities: List[Dict[str, Any]]) -> List[Dict[str
                 "start_date_local": activity.get("start_date_local"),
                 
                 # Performance metrics
-                "distance": activity.get("distance"),  # meters
+                "distance": activity.get("distance"),  # meters (None for strength training)
                 "moving_time": activity.get("moving_time"),  # seconds
                 "elapsed_time": activity.get("elapsed_time"),  # seconds
                 "total_elevation_gain": activity.get("total_elevation_gain"),  # meters
@@ -52,13 +57,22 @@ def extract_performance_stats(activities: List[Dict[str, Any]]) -> List[Dict[str
                 "pr_count": activity.get("pr_count"),
             }
             
-            # Calculate derived metrics
-            if stats["distance"] and stats["moving_time"]:
-                stats["distance_km"] = round(stats["distance"] / 1000, 2)
+            # Calculate derived metrics based on activity type
+            if stats["moving_time"]:
                 stats["moving_time_minutes"] = round(stats["moving_time"] / 60, 2)
+            
+            # Distance-based metrics (only for activities with distance)
+            if stats["distance"]:
+                stats["distance_km"] = round(stats["distance"] / 1000, 2)
                 stats["average_speed_kmh"] = round(stats["average_speed"] * 3.6, 2) if stats["average_speed"] else None
                 stats["max_speed_kmh"] = round(stats["max_speed"] * 3.6, 2) if stats["max_speed"] else None
                 stats["pace_per_km"] = round(stats["moving_time"] / (stats["distance"] / 1000), 2) if stats["distance"] > 0 else None
+            else:
+                # For strength training and other non-distance activities
+                stats["distance_km"] = 0
+                stats["average_speed_kmh"] = None
+                stats["max_speed_kmh"] = None
+                stats["pace_per_km"] = None
             
             performance_stats.append(stats)
     
@@ -79,7 +93,7 @@ def calculate_performance_metrics(activities: List[Dict[str, Any]]) -> Dict[str,
         return {}
     
     # Calculate totals and averages
-    total_distance_km = sum(a["distance_km"] for a in activities)
+    total_distance_km = sum(a["distance_km"] for a in activities if a["distance_km"] is not None)
     total_time_minutes = sum(a["moving_time_minutes"] for a in activities)
     
     # Calculate average speed (only for activities with speed data)
@@ -91,7 +105,7 @@ def calculate_performance_metrics(activities: List[Dict[str, Any]]) -> Dict[str,
     avg_heartrate = sum(a["average_heartrate"] for a in hr_activities) / len(hr_activities) if hr_activities else 0
     
     # Calculate total elevation
-    total_elevation = sum(a["total_elevation_gain"] for a in activities)
+    total_elevation = sum(a["total_elevation_gain"] for a in activities if a["total_elevation_gain"] is not None)
     
     # Activity type breakdown
     activity_types = {}

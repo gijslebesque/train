@@ -24,6 +24,7 @@ import {
   Pool as SwimIcon,
   DirectionsWalk as WalkIcon,
   Hiking as HikeIcon,
+  FitnessCenter as StrengthIcon,
   Refresh as RefreshIcon,
   Speed as SpeedIcon,
   Timer as TimerIcon,
@@ -139,6 +140,9 @@ const ActivitiesPage: React.FC = () => {
       case 'swim': return <SwimIcon />;
       case 'walk': return <WalkIcon />;
       case 'hike': return <HikeIcon />;
+      case 'weighttraining': return <StrengthIcon />;
+      case 'strength': return <StrengthIcon />;
+      case 'weightlifting': return <StrengthIcon />;
       default: return <RunIcon />;
     }
   };
