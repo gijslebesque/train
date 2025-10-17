@@ -105,3 +105,17 @@ def get_ai_provider_info():
     """Get information about the current AI provider."""
     result = container.recommendation_controller.get_provider_info()
     return create_response_with_status(result)
+
+
+@app.delete("/cache")
+def clear_cache():
+    """Clear the recommendations cache."""
+    result = container.recommendation_controller.clear_cache()
+    return create_response_with_status(result)
+
+
+@app.get("/cache/stats")
+def get_cache_stats():
+    """Get cache statistics."""
+    result = container.recommendation_controller.get_cache_stats()
+    return create_response_with_status(result)

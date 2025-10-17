@@ -10,6 +10,7 @@ from .infrastructure.repositories import InMemoryTokenRepository, DatabaseTokenR
 from .infrastructure.database import create_tables
 from .infrastructure.ai_providers.openai_provider import OpenAIProvider
 from .infrastructure.ai_providers.ollama_provider import OllamaProvider
+from .infrastructure.cache.factory import CacheFactory
 from .services.token_service import TokenService
 from .services.recommendation_service import RecommendationService
 from .controllers.auth_controller import AuthController
@@ -42,9 +43,14 @@ class Container:
         
         self._ai_service = self._create_ai_service(ai_provider)
 
+        # Initialize cache service
+        cache_provider = os.getenv("CACHE_PROVIDER", "memory").lower()
+        print(f"Using cache provider: {cache_provider}")
+        self._cache_service = CacheFactory.create_service(cache_provider)
+
         # Initialize services
         self._token_service = TokenService(self._token_repository)
-        self._recommendation_service = RecommendationService(self._ai_service)
+        self._recommendation_service = RecommendationService(self._ai_service, self._cache_service)
 
         # Initialize controllers
         self._auth_controller = AuthController(self._token_service)
@@ -107,6 +113,11 @@ class Container:
     def recommendation_service(self) -> RecommendationService:
         """Get the recommendation service instance."""
         return self._recommendation_service
+    
+    @property
+    def cache_service(self):
+        """Get the cache service instance."""
+        return self._cache_service
 
     def cleanup(self):
         """Cleanup resources."""

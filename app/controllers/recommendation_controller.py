@@ -89,3 +89,36 @@ class RecommendationController(BaseController):
                 f"Failed to get provider info: {str(e)}",
                 "provider_info_error"
             )
+    
+    def clear_cache(self) -> Dict[str, Any]:
+        """Clear the recommendations cache."""
+        try:
+            success = self.recommendation_service.clear_recommendations_cache()
+            if success:
+                return self.success_response(
+                    {"message": "Cache cleared successfully"},
+                    "Cache cleared"
+                )
+            else:
+                return self.error_response(
+                    "Failed to clear cache",
+                    "cache_clear_failed"
+                )
+        except Exception as e:
+            logger.error(f"Error clearing cache: {str(e)}")
+            return self.error_response(
+                f"Error clearing cache: {str(e)}",
+                "cache_clear_error"
+            )
+    
+    def get_cache_stats(self) -> Dict[str, Any]:
+        """Get cache statistics."""
+        try:
+            stats = self.recommendation_service.get_cache_stats()
+            return self.success_response(stats, "Cache statistics retrieved")
+        except Exception as e:
+            logger.error(f"Error getting cache stats: {str(e)}")
+            return self.error_response(
+                f"Error getting cache stats: {str(e)}",
+                "cache_stats_error"
+            )
