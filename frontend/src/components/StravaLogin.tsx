@@ -95,76 +95,133 @@ const StravaLogin: React.FC = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 8, mb: 4 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Box textAlign="center" mb={4}>
-          <Typography variant="h3" component="h1" gutterBottom color="primary">
-            🚴‍♂️ Sporty
+      <Card sx={{ p: 6, backgroundColor: '#111111' }}>
+        <Box textAlign="center" mb={6}>
+          <Box sx={{ 
+            width: 120, 
+            height: 120, 
+            borderRadius: '50%', 
+            backgroundColor: '#ffffff', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            mx: 'auto',
+            mb: 4
+          }}>
+            <StravaIcon sx={{ fontSize: 60, color: '#000000' }} />
+          </Box>
+          <Typography variant="h3" component="h1" gutterBottom color="primary" fontWeight={700}>
+            SPORTY
           </Typography>
-          <Typography variant="h5" color="text.secondary">
+          <Typography variant="h5" color="text.secondary" sx={{ maxWidth: 500, mx: 'auto' }}>
             AI-Powered Training Recommendations
           </Typography>
         </Box>
 
         {tokenStatus?.data.status === 'tokens_available' ? (
-          <Card sx={{ mb: 3 }}>
+          <Card sx={{ mb: 4, backgroundColor: '#1a1a1a', border: '1px solid #333333' }}>
             <CardContent>
-              <Alert severity="success" sx={{ mb: 2 }}>
+              <Alert 
+                severity="success" 
+                sx={{ 
+                  mb: 3, 
+                  backgroundColor: '#1a1a1a',
+                  border: '1px solid #333333',
+                  color: '#ffffff',
+                  '& .MuiAlert-icon': {
+                    color: '#4caf50'
+                  }
+                }}
+              >
                 <Typography variant="h6" gutterBottom>
                   ✅ Connected to Strava!
                 </Typography>
-                <Typography variant="body2">
+                <Typography variant="body2" color="text.secondary">
                   Athlete ID: {tokenStatus.data.athlete_id}
                 </Typography>
                 {tokenStatus.data.is_expired ? (
-                  <Chip label="Token expired" color="error" size="small" sx={{ mt: 1 }} />
+                  <Chip 
+                    label="Token expired" 
+                    sx={{ 
+                      mt: 1, 
+                      backgroundColor: '#ff4444',
+                      color: '#ffffff'
+                    }} 
+                    size="small" 
+                  />
                 ) : (
                   <Chip 
                     label={`Expires in: ${Math.floor((tokenStatus.data.time_until_expiry || 0) / 3600)} hours`} 
-                    color="success" 
+                    sx={{ 
+                      mt: 1,
+                      backgroundColor: '#333333',
+                      color: '#ffffff'
+                    }} 
                     size="small" 
-                    sx={{ mt: 1 }} 
                   />
                 )}
               </Alert>
               
-              <Stack spacing={2}>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  startIcon={<LogoutIcon />}
-                  onClick={handleLogout}
-                  fullWidth
-                >
-                  Logout from Strava
-                </Button>
-                
+              <Stack spacing={3}>
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     startIcon={<ViewActivitiesIcon />}
                     onClick={() => navigate('/activities')}
-                    sx={{ flex: 1 }}
+                    sx={{ 
+                      flex: 1,
+                      borderColor: '#333333',
+                      color: '#ffffff',
+                      '&:hover': {
+                        borderColor: '#ffffff',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      }
+                    }}
                   >
                     View Activities
                   </Button>
                   
                   <Button
                     variant="contained"
-                    color="success"
                     startIcon={<RecommendationsIcon />}
                     onClick={() => navigate('/recommendations')}
-                    sx={{ flex: 1 }}
+                    sx={{ 
+                      flex: 1,
+                      backgroundColor: '#ffffff',
+                      color: '#000000',
+                      '&:hover': {
+                        backgroundColor: '#f0f0f0',
+                      }
+                    }}
                   >
                     Get Recommendations
                   </Button>
                 </Stack>
+                
+                <Button
+                  variant="outlined"
+                  startIcon={<LogoutIcon />}
+                  onClick={handleLogout}
+                  fullWidth
+                  sx={{ 
+                    borderColor: '#333333',
+                    color: '#b0b0b0',
+                    '&:hover': {
+                      borderColor: '#ffffff',
+                      color: '#ffffff',
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    }
+                  }}
+                >
+                  Logout from Strava
+                </Button>
               </Stack>
             </CardContent>
           </Card>
         ) : (
-          <Card>
+          <Card sx={{ backgroundColor: '#1a1a1a', border: '1px solid #333333' }}>
             <CardContent>
-              <Typography variant="body1" color="text.secondary" paragraph textAlign="center">
+              <Typography variant="body1" color="text.secondary" paragraph textAlign="center" sx={{ mb: 4 }}>
                 Connect your Strava account to get AI-powered training recommendations based on your activities.
               </Typography>
               
@@ -175,7 +232,18 @@ const StravaLogin: React.FC = () => {
                 onClick={handleLogin}
                 disabled={isLoading}
                 fullWidth
-                sx={{ py: 1.5 }}
+                sx={{ 
+                  py: 2,
+                  backgroundColor: '#ffffff',
+                  color: '#000000',
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                  '&:disabled': {
+                    backgroundColor: '#333333',
+                    color: '#666666',
+                  }
+                }}
               >
                 {isLoading ? (
                   <Box display="flex" alignItems="center" gap={1}>
@@ -183,20 +251,20 @@ const StravaLogin: React.FC = () => {
                     Connecting...
                   </Box>
                 ) : (
-                  '🚴‍♂️ Login with Strava'
+                  'Login with Strava'
                 )}
               </Button>
             </CardContent>
           </Card>
         )}
 
-        <Box mt={3} textAlign="center">
-          <Typography variant="body2" color="text.secondary">
+        <Box mt={4} textAlign="center">
+          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 500, mx: 'auto' }}>
             After clicking login, you'll be redirected to Strava to authorize the application.
             Once authorized, you'll be redirected back to this page.
           </Typography>
         </Box>
-      </Paper>
+      </Card>
     </Container>
   );
 };

@@ -24,37 +24,63 @@ const Navigation: React.FC = () => {
   ];
 
   return (
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <AppBar 
+      position="fixed" 
+      sx={{ 
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+        backgroundColor: '#000000',
+        borderBottom: '1px solid #333333',
+        boxShadow: 'none'
+      }}
+    >
       <Container maxWidth="lg">
-        <Toolbar>
+        <Toolbar sx={{ minHeight: '64px' }}>
           <Typography
-            variant="h6"
+            variant="h5"
             component={Link}
             to="/"
             sx={{
               flexGrow: 1,
-              color: 'inherit',
+              color: '#ffffff',
               textDecoration: 'none',
-              fontWeight: 'bold'
+              fontWeight: 700,
+              letterSpacing: '-0.02em'
             }}
           >
-            🚴‍♂️ Sporty
+            SPORTY
           </Typography>
           
-          <Box sx={{ display: 'flex', gap: 1 }}>
+          <Box sx={{ display: 'flex', gap: 0.5 }}>
             {navItems.map((item) => (
               <Button
                 key={item.path}
                 component={Link}
                 to={item.path}
                 startIcon={item.icon}
-                color="inherit"
-                variant={location.pathname === item.path ? 'contained' : 'text'}
+                variant={location.pathname === item.path ? 'contained' : 'outlined'}
                 sx={{
-                  backgroundColor: location.pathname === item.path ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                  }
+                  borderRadius: '8px',
+                  px: 2,
+                  py: 1,
+                  minWidth: 'auto',
+                  textTransform: 'none',
+                  fontWeight: 500,
+                  fontSize: '0.875rem',
+                  ...(location.pathname === item.path && {
+                    backgroundColor: '#ffffff',
+                    color: '#000000',
+                    '&:hover': {
+                      backgroundColor: '#f0f0f0',
+                    }
+                  }),
+                  ...(location.pathname !== item.path && {
+                    borderColor: '#333333',
+                    color: '#ffffff',
+                    '&:hover': {
+                      borderColor: '#ffffff',
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    }
+                  })
                 }}
               >
                 {item.label}

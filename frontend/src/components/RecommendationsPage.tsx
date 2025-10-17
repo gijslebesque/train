@@ -135,10 +135,10 @@ const RecommendationsPage: React.FC = () => {
           alignItems="center"
           justifyContent="center"
           minHeight="50vh"
-          gap={2}
+          gap={3}
         >
-          <CircularProgress size={60} />
-          <Typography variant="h6" color="text.secondary">
+          <CircularProgress size={60} sx={{ color: '#ffffff' }} />
+          <Typography variant="h6" color="text.secondary" textAlign="center">
             🤖 Generating AI recommendations...
           </Typography>
         </Box>
@@ -150,7 +150,18 @@ const RecommendationsPage: React.FC = () => {
     return (
       <Container maxWidth="md" sx={{ mt: 8, mb: 4 }}>
         <Box textAlign="center">
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert 
+            severity="error" 
+            sx={{ 
+              mb: 3,
+              backgroundColor: '#1a1a1a',
+              border: '1px solid #ff4444',
+              color: '#ffffff',
+              '& .MuiAlert-icon': {
+                color: '#ff4444'
+              }
+            }}
+          >
             ❌ {error}
           </Alert>
           <Button
@@ -158,6 +169,13 @@ const RecommendationsPage: React.FC = () => {
             onClick={fetchRecommendations}
             startIcon={<RefreshIcon />}
             size="large"
+            sx={{
+              backgroundColor: '#ffffff',
+              color: '#000000',
+              '&:hover': {
+                backgroundColor: '#f0f0f0',
+              }
+            }}
           >
             Try Again
           </Button>
@@ -170,7 +188,17 @@ const RecommendationsPage: React.FC = () => {
     return (
       <Container maxWidth="md" sx={{ mt: 8, mb: 4 }}>
         <Box textAlign="center">
-          <Alert severity="info">
+          <Alert 
+            severity="info"
+            sx={{
+              backgroundColor: '#1a1a1a',
+              border: '1px solid #333333',
+              color: '#ffffff',
+              '& .MuiAlert-icon': {
+                color: '#2196f3'
+              }
+            }}
+          >
             No recommendations available. Make sure you have activities and are connected to Strava.
           </Alert>
         </Box>
@@ -185,29 +213,36 @@ const RecommendationsPage: React.FC = () => {
         display="flex"
         justifyContent="space-between"
         alignItems="center"
-        mb={4}
-        pb={2}
-        borderBottom="2px solid"
+        mb={6}
+        pb={3}
+        borderBottom="1px solid"
         borderColor="divider"
       >
-        <Typography variant="h4" component="h1" color="primary" fontWeight="bold">
+        <Typography variant="h4" component="h1" color="primary" fontWeight={700}>
           <PsychologyIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
           AI Training Recommendations
         </Typography>
         <Button
-          variant="contained"
-          color="success"
+          variant="outlined"
           onClick={fetchRecommendations}
           startIcon={<RefreshIcon />}
+          sx={{
+            borderColor: '#333333',
+            color: '#ffffff',
+            '&:hover': {
+              borderColor: '#ffffff',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            }
+          }}
         >
           Refresh
         </Button>
       </Box>
 
       {/* Performance Summary */}
-      <Card sx={{ mb: 4 }}>
-        <CardContent>
-          <Typography variant="h5" component="h2" gutterBottom color="primary">
+      <Card sx={{ mb: 6, backgroundColor: '#111111', border: '1px solid #333333' }}>
+        <CardContent sx={{ p: 4 }}>
+          <Typography variant="h5" component="h2" gutterBottom color="primary" fontWeight={600} sx={{ mb: 3 }}>
             <TrendingUpIcon sx={{ mr: 1, verticalAlign: 'middle' }} />
             Performance Summary
           </Typography>
@@ -227,7 +262,7 @@ const RecommendationsPage: React.FC = () => {
             
             <Grid item xs={6} sm={4} md={2.4}>
               <Box textAlign="center">
-                <Typography variant="h4" color="success.main" fontWeight="bold">
+                <Typography variant="h4" color="primary" fontWeight="bold">
                   {recommendations.metrics.total_distance_km.toFixed(1)} km
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -238,7 +273,7 @@ const RecommendationsPage: React.FC = () => {
             
             <Grid item xs={6} sm={4} md={2.4}>
               <Box textAlign="center">
-                <Typography variant="h4" color="warning.main" fontWeight="bold">
+                <Typography variant="h4" color="primary" fontWeight="bold">
                   {formatDuration(recommendations.metrics.total_time_minutes)}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -250,7 +285,7 @@ const RecommendationsPage: React.FC = () => {
             
             <Grid item xs={6} sm={4} md={2.4}>
               <Box textAlign="center">
-                <Typography variant="h4" color="error.main" fontWeight="bold">
+                <Typography variant="h4" color="primary" fontWeight="bold">
                   {recommendations.metrics.avg_speed_kmh.toFixed(1)} km/h
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -263,7 +298,7 @@ const RecommendationsPage: React.FC = () => {
             {recommendations.metrics.avg_heartrate > 0 && (
               <Grid item xs={6} sm={4} md={2.4}>
                 <Box textAlign="center">
-                  <Typography variant="h4" color="secondary" fontWeight="bold">
+                  <Typography variant="h4" color="primary" fontWeight="bold">
                     {recommendations.metrics.avg_heartrate} bpm
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -276,8 +311,8 @@ const RecommendationsPage: React.FC = () => {
           </Grid>
           
           {/* Activity Types */}
-          <Box sx={{ mt: 3 }}>
-            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="subtitle1" fontWeight={600} gutterBottom color="primary">
               Activity Types:
             </Typography>
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
@@ -285,8 +320,14 @@ const RecommendationsPage: React.FC = () => {
                 <Chip
                   key={type}
                   label={`${type}: ${count}`}
-                  color="primary"
                   size="small"
+                  sx={{
+                    backgroundColor: '#333333',
+                    color: '#ffffff',
+                    '&:hover': {
+                      backgroundColor: '#444444',
+                    }
+                  }}
                 />
               ))}
             </Stack>
@@ -327,36 +368,35 @@ const RecommendationsPage: React.FC = () => {
 
       {/* Weekly Schedule Table */}
       {recommendations.schedule && recommendations.schedule.workouts && (
-        <Card sx={{ mb: 4, boxShadow: 3 }}>
+        <Card sx={{ mb: 6, backgroundColor: '#111111', border: '1px solid #333333' }}>
           <Box
             sx={{
-              backgroundColor: 'success.light',
-              color: 'success.contrastText',
-              p: 2,
-              borderBottom: '1px solid',
-              borderColor: 'divider'
+              backgroundColor: '#1a1a1a',
+              color: '#ffffff',
+              p: 3,
+              borderBottom: '1px solid #333333'
             }}
           >
-            <Typography variant="h5" component="h3" fontWeight="bold">
+            <Typography variant="h5" component="h3" fontWeight={600}>
               📅 Weekly Training Schedule
             </Typography>
             {recommendations.schedule.week_of && (
-              <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
+              <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
                 Week of: {recommendations.schedule.week_of}
               </Typography>
             )}
           </Box>
           
-          <TableContainer component={Paper} elevation={0}>
+          <TableContainer sx={{ backgroundColor: '#111111' }}>
             <Table sx={{ minWidth: 650 }} aria-label="weekly schedule table">
               <TableHead>
-                <TableRow sx={{ backgroundColor: 'grey.100' }}>
-                  <TableCell><strong>Day</strong></TableCell>
-                  <TableCell><strong>Workout</strong></TableCell>
-                  <TableCell><strong>Distance</strong></TableCell>
-                  <TableCell><strong>Time</strong></TableCell>
-                  <TableCell><strong>Pace</strong></TableCell>
-                  <TableCell><strong>Notes</strong></TableCell>
+                <TableRow sx={{ backgroundColor: '#1a1a1a' }}>
+                  <TableCell sx={{ color: '#ffffff', fontWeight: 600 }}>Day</TableCell>
+                  <TableCell sx={{ color: '#ffffff', fontWeight: 600 }}>Workout</TableCell>
+                  <TableCell sx={{ color: '#ffffff', fontWeight: 600 }}>Distance</TableCell>
+                  <TableCell sx={{ color: '#ffffff', fontWeight: 600 }}>Time</TableCell>
+                  <TableCell sx={{ color: '#ffffff', fontWeight: 600 }}>Pace</TableCell>
+                  <TableCell sx={{ color: '#ffffff', fontWeight: 600 }}>Notes</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -365,12 +405,15 @@ const RecommendationsPage: React.FC = () => {
                     key={index}
                     sx={{ 
                       '&:last-child td, &:last-child th': { border: 0 },
-                      backgroundColor: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? 'grey.50' : 'white'
+                      backgroundColor: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? '#0a0a0a' : '#111111',
+                      '&:hover': {
+                        backgroundColor: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? '#151515' : '#1a1a1a',
+                      }
                     }}
                   >
                     <TableCell component="th" scope="row">
                       <Box>
-                        <Typography variant="subtitle2" fontWeight="bold" color="primary">
+                        <Typography variant="subtitle2" fontWeight={600} color="primary">
                           {getWeekday(workout.date)}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
@@ -381,23 +424,29 @@ const RecommendationsPage: React.FC = () => {
                     <TableCell>
                       <Chip 
                         label={workout.workout}
-                        color={workout.workout === 'Rest' || workout.workout === 'Rest Day' ? 'default' : 'primary'}
                         size="small"
-                        variant={workout.workout === 'Rest' || workout.workout === 'Rest Day' ? 'outlined' : 'filled'}
+                        sx={{
+                          backgroundColor: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? '#333333' : '#ffffff',
+                          color: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? '#ffffff' : '#000000',
+                          border: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? '1px solid #555555' : 'none',
+                          '&:hover': {
+                            backgroundColor: workout.workout === 'Rest' || workout.workout === 'Rest Day' ? '#444444' : '#f0f0f0',
+                          }
+                        }}
                       />
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2">
+                      <Typography variant="body2" color="text.primary">
                         {workout.distance ? `${workout.distance}${typeof workout.distance === 'number' ? ' km' : ''}` : '-'}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2">
+                      <Typography variant="body2" color="text.primary">
                         {workout.time || '-'}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2">
+                      <Typography variant="body2" color="text.primary">
                         {workout.pace || '-'}
                       </Typography>
                     </TableCell>
@@ -415,18 +464,18 @@ const RecommendationsPage: React.FC = () => {
       )}
 
       {/* Token Usage Info */}
-      <Paper
-        elevation={1}
+      <Card
         sx={{
-          p: 2,
+          p: 3,
           textAlign: 'center',
-          backgroundColor: 'grey.50'
+          backgroundColor: '#1a1a1a',
+          border: '1px solid #333333'
         }}
       >
         <Typography variant="body2" color="text.secondary">
           <strong>AI Usage:</strong> {recommendations.token_usage.input_tokens} input + {recommendations.token_usage.output_tokens} output = {recommendations.token_usage.total_tokens} total tokens
         </Typography>
-      </Paper>
+      </Card>
     </Container>
   );
 };
